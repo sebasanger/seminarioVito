@@ -1,5 +1,6 @@
 package utils;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -27,6 +28,15 @@ public class DateUtils {
                 System.out.println("Formato de fecha incorrecto. Por favor, intenta de nuevo.");
             }
         }
+    }
+
+    public static Date transformDateUtilToSql(java.util.Date fecha) {
+        if (fecha == null) {
+            return null;
+        }
+        Date date = new Date(fecha.getTime());
+
+        return date;
     }
 
 }

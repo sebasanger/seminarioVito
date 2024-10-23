@@ -21,10 +21,6 @@ public class Reserva {
     private Habitacion habitacion;
     private PrecioHabitacion precioHabitacion;
 
-    private Integer precioHabitacionId;
-    private Integer habitacionId;
-    private Integer usuarioId;
-
     private Usuario usuario;
 
     public Reserva() {
@@ -32,6 +28,26 @@ public class Reserva {
 
     public Reserva(Integer id) {
         this.id = id;
+    }
+
+    public Reserva(Integer id, Date checkIn, Date checkOut, Date fechaCreacion, Date fechaInicio, Date fechaFin,
+            String origen, String destino, Double precioDiario, Double precioTotal, Double pagadoTotal, String estado,
+            Habitacion habitacion, PrecioHabitacion precioHabitacion, Usuario usuario) {
+        this.id = id;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.origen = origen;
+        this.destino = destino;
+        this.precioDiario = precioDiario;
+        this.precioTotal = precioTotal;
+        this.pagadoTotal = pagadoTotal;
+        this.estado = estado;
+        this.habitacion = habitacion;
+        this.precioHabitacion = precioHabitacion;
+        this.usuario = usuario;
     }
 
     public Reserva(Date checkIn, Date checkOut, Date fechaCreacion, Date fechaInicio, Date fechaFin,
@@ -52,26 +68,6 @@ public class Reserva {
         this.habitacion = habitacion;
         this.precioHabitacion = precioHabitacion;
         this.usuario = usuario;
-    }
-
-    public Reserva(Integer id, Date checkIn, Date checkOut, Date fechaCreacion, Date fechaInicio, Date fechaFin,
-            String origen, String destino, Double precioDiario, Double precioTotal, Double pagadoTotal, String estado,
-            Integer habitacionId, Integer precioHabitacionId, Integer usuarioId) {
-        this.id = id;
-        this.checkIn = checkIn;
-        this.checkOut = checkOut;
-        this.fechaCreacion = fechaCreacion;
-        this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
-        this.origen = origen;
-        this.destino = destino;
-        this.precioDiario = precioDiario;
-        this.precioTotal = precioTotal;
-        this.pagadoTotal = pagadoTotal;
-        this.estado = estado;
-        this.habitacionId = habitacionId;
-        this.precioHabitacionId = precioHabitacionId;
-        this.usuarioId = usuarioId;
     }
 
     public Reserva(Integer id, Date checkIn, Date checkOut, Date fechaCreacion, Date fechaInicio, Date fechaFin,
@@ -215,22 +211,6 @@ public class Reserva {
         this.precioHabitacion = precioHabitacion;
     }
 
-    public Integer getHabitacionId() {
-        return habitacionId;
-    }
-
-    public void setHabitacionId(Integer habitacionId) {
-        this.habitacionId = habitacionId;
-    }
-
-    public Integer getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Integer usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
@@ -270,16 +250,7 @@ public class Reserva {
                 + fechaCreacion + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + ", origen=" + origen
                 + ", destino=" + destino + ", precioDiario=" + precioDiario + ", precioTotal=" + precioTotal
                 + ", pagadoTotal=" + pagadoTotal + ", estado=" + estado + ", clientes=" + clientes + ", habitacion="
-                + habitacion + ", precioHabitacion=" + precioHabitacion + ", precioHabitacionId=" + precioHabitacionId
-                + ", habitacionId=" + habitacionId + ", usuarioId=" + usuarioId + ", usuario=" + usuario + "]";
-    }
-
-    public Integer getPrecioHabitacionId() {
-        return precioHabitacionId;
-    }
-
-    public void setPrecioHabitacionId(Integer precioHabitacionId) {
-        this.precioHabitacionId = precioHabitacionId;
+                + habitacion + ", precioHabitacion=" + precioHabitacion + ", usuario=" + usuario + "]";
     }
 
 }

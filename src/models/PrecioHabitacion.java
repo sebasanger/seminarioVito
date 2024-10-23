@@ -12,6 +12,10 @@ public class PrecioHabitacion {
     public PrecioHabitacion() {
     }
 
+    public PrecioHabitacion(Integer id) {
+        this.id = id;
+    }
+
     public PrecioHabitacion(Double precio, String descripcion, Boolean disponible, Date fechaCreacion) {
         this.precio = precio;
         this.descripcion = descripcion;

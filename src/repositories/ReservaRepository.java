@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.MySQLConnection;
+import models.Habitacion;
+import models.PrecioHabitacion;
 import models.Reserva;
+import models.Usuario;
+import utils.DateUtils;
 
 public class ReservaRepository extends AbstractGenericRepository<Reserva, Integer> {
 
@@ -19,32 +23,35 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
     @Override
     protected Reserva mapeoEntidad(ResultSet rs) throws SQLException {
+
         return new Reserva(rs.getInt("id"), rs.getDate("checkIn"), rs.getDate("checkOut"), rs.getDate("fechaCreacion"),
                 rs.getDate("fechaInicio"), rs.getDate("fechaFin"), rs.getString("origen"),
                 rs.getString("destino"), rs.getDouble("precioDiario"), rs.getDouble("precioTotal"),
                 rs.getDouble("pagadoTotal"), rs.getString("estado"),
-                rs.getInt("habitaciones_id"), rs.getInt("precios_habitaciones_id"), rs.getInt("usuarios_id"));
+                new Habitacion(rs.getInt("habitaciones_id")),
+                new PrecioHabitacion(rs.getInt("precios_habitaciones_id")),
+                new Usuario(rs.getInt("usuarios_id")));
     }
 
     @Override
     public void crear(Reserva reserva) throws SQLException {
-        String sql = "INSERT INTO reservas (checkIn, checkOut, fechaCreacion, fechaInicio, fechaFin, origen, destino, precioDiario, precioTotal, pagadoTotal, estado, habitaciones_id, preciosHabitaciones_id, usuarios_id ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO reservas (checkIn, checkOut, fechaCreacion, fechaInicio, fechaFin, origen, destino, precioDiario, precioTotal, pagadoTotal, estado, habitaciones_id, precios_habitaciones_id, usuarios_id ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (Connection conn = MySQLConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setDate(1, new java.sql.Date(reserva.getCheckIn().getTime()));
-            stmt.setDate(2, new java.sql.Date(reserva.getCheckOut().getTime()));
-            stmt.setDate(3, new java.sql.Date(reserva.getFechaCreacion().getTime()));
-            stmt.setDate(4, new java.sql.Date(reserva.getFechaInicio().getTime()));
-            stmt.setDate(5, new java.sql.Date(reserva.getFechaFin().getTime()));
+            stmt.setDate(1, DateUtils.transformDateUtilToSql(reserva.getCheckIn()));
+            stmt.setDate(2, DateUtils.transformDateUtilToSql(reserva.getCheckOut()));
+            stmt.setDate(3, DateUtils.transformDateUtilToSql(reserva.getFechaCreacion()));
+            stmt.setDate(4, DateUtils.transformDateUtilToSql(reserva.getFechaInicio()));
+            stmt.setDate(5, DateUtils.transformDateUtilToSql(reserva.getFechaFin()));
 
             stmt.setString(6, reserva.getOrigen());
             stmt.setString(7, reserva.getDestino());
 
-            stmt.setDouble(8, reserva.getPrecioDiario());
-            stmt.setDouble(9, reserva.getPagadoTotal());
-            stmt.setDouble(10, reserva.getPagadoTotal());
+            stmt.setDouble(8, reserva.getPrecioDiario() != null ? reserva.getPrecioDiario() : 0);
+            stmt.setDouble(9, reserva.getPagadoTotal() != null ? reserva.getPagadoTotal() : 0);
+            stmt.setDouble(10, reserva.getPrecioTotal() != null ? reserva.getPrecioTotal() : 0);
 
             stmt.setString(11, reserva.getEstado());
 
@@ -58,7 +65,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
     @Override
     public void actualizar(Reserva reserva) throws SQLException {
-        String sql = "UPDATE consumiciones SET checkIn = ?, checkOut = ?, fechaCreacion = ?, fechaInicio = ?, fechaFin = ?, origen = ? , destino = ?, precioDiario = ?, precioTotal = ?, pagadoTotal = ?, estado = ?, habitaciones_id = ?, preciosHabitaciones_id = ? , usuarios_id = ? WHERE id = ?";
+        String sql = "UPDATE consumiciones SET checkIn = ?, checkOut = ?, fechaCreacion = ?, fechaInicio = ?, fechaFin = ?, origen = ? , destino = ?, precioDiario = ?, precioTotal = ?, pagadoTotal = ?, estado = ?, habitaciones_id = ?, precios_habitaciones_id = ? , usuarios_id = ? WHERE id = ?";
 
         try (Connection conn = MySQLConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -29,9 +29,9 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
         List<Reserva> reservas = reservaRepository.obtenerTodos();
 
         for (Reserva reserva : reservas) {
-            reserva.setPrecioHabitacion(precioHabitacionRepository.obtenerPorId(reserva.getPrecioHabitacionId()));
-            reserva.setHabitacion(habitacionRepository.obtenerPorId(reserva.getPrecioHabitacionId()));
-            reserva.setUsuario(usuarioRepository.obtenerPorId(reserva.getUsuarioId()));
+            reserva.setPrecioHabitacion(precioHabitacionRepository.obtenerPorId(reserva.getPrecioHabitacion().getId()));
+            reserva.setHabitacion(habitacionRepository.obtenerPorId(reserva.getHabitacion().getId()));
+            reserva.setUsuario(usuarioRepository.obtenerPorId(reserva.getUsuario().getId()));
             reserva.setClientes(clienteRepository.obtenerClientesReserva(reserva.getId()));
 
         }

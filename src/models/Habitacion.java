@@ -16,6 +16,10 @@ public class Habitacion {
     public Habitacion() {
     }
 
+    public Habitacion(Integer id) {
+        this.id = id;
+    }
+
     public Habitacion(Integer id, String numeroHabitacion, Boolean disponible, Boolean habilitada, Integer piso,
             Integer camasSingles, Integer camasDobles, Integer capacidad) {
         this.id = id;

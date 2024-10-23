@@ -7,9 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import controllers.HabitacionController;
 import controllers.ReservaController;
 import models.Cliente;
+import models.Habitacion;
+import models.PrecioHabitacion;
 import models.Reserva;
+import models.Usuario;
 import utils.DateUtils;
 
 public class ReservasView {
@@ -80,8 +84,6 @@ public class ReservasView {
             reserva.setCheckIn(Date.valueOf(fechaInicio));
         }
 
-        System.out.println(reserva);
-
         for (int i = 0; i < cantidadHuespedes; i++) {
             System.out.println("HUESPED " + (i + 1));
             Cliente huesped = ClientesView.crearCliente();
@@ -90,10 +92,30 @@ public class ReservasView {
         }
         reserva.setClientes(huespedes);
 
-        // Otros detalles de la reserva
-        // Reserva nuevaReserva = new Reserva(id, /* otros parámetros */);
-        // reservaController.crear(nuevaReserva);
+        Habitacion habitacion = HabitacionesView.obtenerSeleccionHabitacionLibre(Date.valueOf(fechaInicio),
+                Date.valueOf(fechaFin), cantidadHuespedes);
+
+        reserva.setHabitacion(habitacion);
+
+        System.out.print("Ingrese el destino: \n");
+        String destino = scanner.next();
+        reserva.setDestino(destino);
+
+        System.out.print("Ingrese el origen: \n");
+        String origen = scanner.next();
+        reserva.setOrigen(origen);
+
+        PrecioHabitacion precioHabitacion = PreciosHabitacionesView.obtenerSeleccionPrecio();
+        reserva.setPrecioHabitacion(precioHabitacion);
+
+        reserva.setPrecioDiario(precioHabitacion.getPrecio());
+
+        // TODO: faltante de agregar el usuario cuando se tenga el login
+        reserva.setUsuario(new Usuario(1));
+
+        reservaController.crear(reserva);
         System.out.println("Reserva creada con éxito.");
+        System.out.println(reserva);
     }
 
     private static void verReservas() throws SQLException {
