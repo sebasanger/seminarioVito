@@ -14,6 +14,10 @@ import utils.DateUtils;
 
 public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     private ReservaRepository reservaRepository = new ReservaRepository();
+    private PrecioHabitacionRepository precioHabitacionRepository = new PrecioHabitacionRepository();
+    private UsuarioRepository usuarioRepository = new UsuarioRepository();
+    private HabitacionRepository habitacionRepository = new HabitacionRepository();
+    private ClienteRepository clienteRepository = new ClienteRepository();
 
     @Override
     protected ReservaRepository getRepository() {
@@ -35,28 +39,29 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
             reserva.setEstado(EstadoReservaEnum.PENDIENTE.getEstado());
         }
 
+        System.out.println("Reserva creada con éxito.");
+        System.out.println(reserva);
+
         reservaRepository.crear(reserva);
     }
 
     @Override
     public List<Reserva> obtenerTodos() throws SQLException {
 
-        PrecioHabitacionRepository precioHabitacionRepository = new PrecioHabitacionRepository();
-        UsuarioRepository usuarioRepository = new UsuarioRepository();
-        HabitacionRepository habitacionRepository = new HabitacionRepository();
-        ClienteRepository clienteRepository = new ClienteRepository();
-
         List<Reserva> reservas = reservaRepository.obtenerTodos();
 
         for (Reserva reserva : reservas) {
-            reserva.setPrecioHabitacion(precioHabitacionRepository.obtenerPorId(reserva.getPrecioHabitacion().getId()));
-            reserva.setHabitacion(habitacionRepository.obtenerPorId(reserva.getHabitacion().getId()));
-            reserva.setUsuario(usuarioRepository.obtenerPorId(reserva.getUsuario().getId()));
-            reserva.setClientes(clienteRepository.obtenerClientesReserva(reserva.getId()));
-
+            reserva = this.obtenerDatosRelacionadosReserva(reserva);
         }
 
         return reservas;
+    }
+
+    @Override
+    public Reserva obtenerPorId(Integer id) throws SQLException {
+        Reserva reserva = reservaRepository.obtenerPorId(id);
+
+        return this.obtenerDatosRelacionadosReserva(reserva);
     }
 
     public List<Reserva> obtenerReservasPorEstado(String status) throws SQLException {
@@ -64,10 +69,16 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     }
 
     private Double getPrecioTotal(java.util.Date fechaInicio, java.util.Date fechaFin, Double precioDiario) {
-
         Long cantidadDias = DateUtils.getDiffInDays(fechaInicio, fechaFin);
-
         return cantidadDias * precioDiario;
+    }
+
+    private Reserva obtenerDatosRelacionadosReserva(Reserva reserva) throws SQLException {
+        reserva.setPrecioHabitacion(precioHabitacionRepository.obtenerPorId(reserva.getPrecioHabitacion().getId()));
+        reserva.setHabitacion(habitacionRepository.obtenerPorId(reserva.getHabitacion().getId()));
+        reserva.setUsuario(usuarioRepository.obtenerPorId(reserva.getUsuario().getId()));
+        reserva.setClientes(clienteRepository.obtenerClientesReserva(reserva.getId()));
+        return reserva;
     }
 
 }

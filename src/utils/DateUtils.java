@@ -14,7 +14,19 @@ public class DateUtils {
     private static final Scanner scanner = new Scanner(System.in);
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public static LocalDate pedirFecha(String mensaje, LocalDate fechaMinima) {
+    public static LocalDate pedirFecha(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje + " (formato: dd/MM/yyyy): ");
+                String input = scanner.nextLine();
+                return LocalDate.parse(input, formatter);
+            } catch (DateTimeParseException e) {
+                System.out.println("Formato de fecha incorrecto. Por favor, intenta de nuevo.");
+            }
+        }
+    }
+
+    public static LocalDate pedirFechaConMinimo(String mensaje, LocalDate fechaMinima) {
         while (true) {
             try {
                 System.out.print(mensaje + " (formato: dd/MM/yyyy): ");

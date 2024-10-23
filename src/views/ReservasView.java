@@ -19,6 +19,7 @@ public class ReservasView {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static ReservaController reservaController = new ReservaController();
+    private static ReservasViewActualizacion reservasViewActualizacion = new ReservasViewActualizacion();
 
     public static void mostrarMenuReservas() throws SQLException {
         while (true) {
@@ -71,8 +72,8 @@ public class ReservasView {
         int cantidadHuespedes = scanner.nextInt();
 
         LocalDate fechaCreacion = LocalDate.now();
-        LocalDate fechaInicio = DateUtils.pedirFecha("Ingrese la fecha de inicio estimada", fechaCreacion);
-        LocalDate fechaFin = DateUtils.pedirFecha("Ingrese la fecha de fin estimada", fechaInicio);
+        LocalDate fechaInicio = DateUtils.pedirFechaConMinimo("Ingrese la fecha de inicio estimada", fechaCreacion);
+        LocalDate fechaFin = DateUtils.pedirFechaConMinimo("Ingrese la fecha de fin estimada", fechaInicio);
 
         reserva.setFechaCreacion(Date.valueOf(fechaCreacion));
         reserva.setFechaInicio(Date.valueOf(fechaInicio));
@@ -111,8 +112,6 @@ public class ReservasView {
         reserva.setUsuario(new Usuario(1));
 
         reservaController.crear(reserva);
-        System.out.println("Reserva creada con éxito.");
-        System.out.println(reserva);
     }
 
     private static void verReservas() throws SQLException {
@@ -130,16 +129,16 @@ public class ReservasView {
     }
 
     private static void actualizarReserva() throws SQLException {
+        System.out.println("===========================================");
+        System.out.println("           ACTUALIZACION DE RESERVA        ");
+        System.out.println("===========================================");
+        verReservas();
+
         System.out.print("Ingrese el ID de la reserva a actualizar: ");
         int id = scanner.nextInt();
         Reserva reserva = reservaController.obtenerPorId(id);
         if (reserva != null) {
-            // Actualizar campos
-            System.out.print("Ingrese el nuevo precio diario: ");
-            double nuevoPrecio = scanner.nextDouble();
-            reserva.setPrecioDiario(nuevoPrecio);
-            reservaController.actualizar(reserva);
-            System.out.println("Reserva actualizada con éxito.");
+            reservasViewActualizacion.actualizarReserva(reserva);
         } else {
             System.out.println("Reserva no encontrada.");
         }
