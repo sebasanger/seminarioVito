@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import controllers.HabitacionController;
 import controllers.ReservaController;
 import models.Cliente;
 import models.Habitacion;
@@ -107,8 +106,6 @@ public class ReservasView {
 
         PrecioHabitacion precioHabitacion = PreciosHabitacionesView.obtenerSeleccionPrecio();
         reserva.setPrecioHabitacion(precioHabitacion);
-
-        reserva.setPrecioDiario(precioHabitacion.getPrecio());
 
         // TODO: faltante de agregar el usuario cuando se tenga el login
         reserva.setUsuario(new Usuario(1));

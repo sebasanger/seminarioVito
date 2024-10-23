@@ -3,12 +3,14 @@ package services;
 import java.sql.SQLException;
 import java.util.List;
 
+import models.EstadoReservaEnum;
 import models.Reserva;
 import repositories.ClienteRepository;
 import repositories.HabitacionRepository;
 import repositories.PrecioHabitacionRepository;
 import repositories.ReservaRepository;
 import repositories.UsuarioRepository;
+import utils.DateUtils;
 
 public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     private ReservaRepository reservaRepository = new ReservaRepository();
@@ -16,6 +18,24 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     @Override
     protected ReservaRepository getRepository() {
         return reservaRepository;
+    }
+
+    @Override
+    public void crear(Reserva reserva) throws SQLException {
+
+        reserva.setPrecioDiario(reserva.getPrecioHabitacion().getPrecio());
+
+        Double precioTotal = getPrecioTotal(reserva.getFechaInicio(), reserva.getFechaFin(), reserva.getPrecioDiario());
+        reserva.setPrecioTotal(precioTotal);
+        reserva.setPagadoTotal((double) 0);
+
+        if (DateUtils.mismaFecha(reserva.getFechaInicio(), reserva.getFechaCreacion())) {
+            reserva.setEstado(EstadoReservaEnum.ACTIVA.getEstado());
+        } else {
+            reserva.setEstado(EstadoReservaEnum.PENDIENTE.getEstado());
+        }
+
+        reservaRepository.crear(reserva);
     }
 
     @Override
@@ -41,6 +61,13 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
 
     public List<Reserva> obtenerReservasPorEstado(String status) throws SQLException {
         return this.reservaRepository.obtenerReservasPorEstado(status);
+    }
+
+    private Double getPrecioTotal(java.util.Date fechaInicio, java.util.Date fechaFin, Double precioDiario) {
+
+        Long cantidadDias = DateUtils.getDiffInDays(fechaInicio, fechaFin);
+
+        return cantidadDias * precioDiario;
     }
 
 }

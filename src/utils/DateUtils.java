@@ -2,8 +2,11 @@ package utils;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class DateUtils {
@@ -37,6 +40,36 @@ public class DateUtils {
         Date date = new Date(fecha.getTime());
 
         return date;
+    }
+
+    public static long getDiffInDays(java.util.Date fechaInicio, java.util.Date fechaFin) {
+
+        LocalDate inicio = DateUtils.convertirADate(fechaInicio);
+        LocalDate fin = DateUtils.convertirADate(fechaFin);
+
+        return ChronoUnit.DAYS.between(inicio, fin);
+    }
+
+    public static LocalDate convertirADate(Object fecha) {
+        Objects.requireNonNull(fecha, "La fecha no puede ser nula");
+
+        if (fecha instanceof java.sql.Date) {
+            return ((java.sql.Date) fecha).toLocalDate();
+        } else if (fecha instanceof java.util.Date) {
+            return ((java.util.Date) fecha).toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        } else {
+            throw new IllegalArgumentException(
+                    "El tipo de fecha no es compatible. Se esperaba java.util.Date o java.sql.Date");
+        }
+    }
+
+    public static boolean mismaFecha(java.util.Date fecha1, java.util.Date fecha2) {
+        LocalDate localDate1 = convertirADate(fecha1);
+        LocalDate localDate2 = convertirADate(fecha2);
+
+        return localDate1.equals(localDate2);
     }
 
 }
