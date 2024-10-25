@@ -24,17 +24,6 @@ public class Pago {
         this.reserva = reserva;
     }
 
-    public Pago(Integer id, Double cantidad, Date fecha, String descripcion, Integer usuarioId, Integer cajaId,
-            Integer reservaId) {
-        this.id = id;
-        this.cantidad = cantidad;
-        this.fecha = fecha;
-        this.descripcion = descripcion;
-        // this.usuario = usuario;
-        // this.caja = caja;
-        // this.reserva = reserva;
-    }
-
     public Pago(Integer id, Double cantidad, Date fecha, String descripcion, Usuario usuario, Caja caja,
             Reserva reserva) {
         this.id = id;
@@ -100,6 +89,12 @@ public class Pago {
 
     public void setReserva(Reserva reserva) {
         this.reserva = reserva;
+    }
+
+    @Override
+    public String toString() {
+        return "Pago [id=" + id + ", cantidad=" + cantidad + ", fecha=" + fecha + ", descripcion=" + descripcion
+                + ", usuario=" + usuario + ", caja=" + caja + ", reserva id=" + reserva.getId() + "]";
     }
 
 }

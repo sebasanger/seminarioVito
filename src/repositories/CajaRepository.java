@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import database.MySQLConnection;
 import models.Caja;
+import models.Usuario;
 
 public class CajaRepository extends AbstractGenericRepository<Caja, Integer> {
 
@@ -19,7 +20,7 @@ public class CajaRepository extends AbstractGenericRepository<Caja, Integer> {
     protected Caja mapeoEntidad(ResultSet rs) throws SQLException {
         return new Caja(rs.getInt("id"), rs.getBoolean("activa"), rs.getDouble("montoApertura"),
                 rs.getDouble("montoCierre"), rs.getDate("fechaApertura"), rs.getDate("fechaCierre"),
-                rs.getInt("usuarios_id"));
+                new Usuario(rs.getInt("usuarios_id")));
     }
 
     @Override
@@ -55,6 +56,22 @@ public class CajaRepository extends AbstractGenericRepository<Caja, Integer> {
             stmt.setInt(7, caja.getId());
             stmt.executeUpdate();
         }
+    }
+
+    public Caja obtenerCajaActiva() throws SQLException {
+        String sql = "SELECT * FROM " + getTabla() + " WHERE activa = 1";
+        Caja caja = null;
+
+        try (Connection conn = MySQLConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    caja = mapeoEntidad(rs);
+                }
+            }
+        }
+        return caja;
     }
 
 }

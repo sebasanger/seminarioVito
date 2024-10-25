@@ -11,7 +11,7 @@ public class ClientesView {
     private static final Scanner scanner = new Scanner(System.in);
     private static ClienteController clienteController = new ClienteController();
 
-    public static void mostrarMenuReservas() throws SQLException {
+    public static void mostrarMenuClientes() throws SQLException {
         while (true) {
 
             System.out.println("===========================================");
@@ -91,9 +91,9 @@ public class ClientesView {
 
         System.out.println("-------------------------------------------");
         System.out.println("CLIENTES");
-        clienteController.obtenerTodos().forEach(reserva -> {
-            System.out.println("CLIENTE ID " + reserva.getId());
-            System.out.println(reserva);
+        clienteController.obtenerTodos().forEach(cliente -> {
+            System.out.println("CLIENTE ID " + cliente.getId());
+            System.out.println(cliente);
             System.out.println("======================================");
         });
         System.out.println("CLIENTES");
@@ -140,7 +140,7 @@ public class ClientesView {
         while (continuar) {
             System.out.println("\n--- Menú de Actualización de Cliente ---");
             System.out.println(
-                    "\n--- Realice los cambios y presione 5 cuando tenga todos los cambios que desea sobre la reserva para actualizarla ---");
+                    "\n--- Realice los cambios y presione 5 para actualizar ---");
             System.out.println("0. Cancelar");
             System.out.println("1. Actualizar nombre");
             System.out.println("2. Actualizar apellido");

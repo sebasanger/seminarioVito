@@ -155,7 +155,7 @@ public class ReservasView {
         System.out.println("Reserva eliminada con éxito.");
     }
 
-    private static void verReservasPorEstado() throws SQLException {
+    protected static void verReservasPorEstado() throws SQLException {
 
         System.out.println("===========================================");
         System.out.println("           VSUALIZACION DE RESERVAS             ");
@@ -191,9 +191,8 @@ public class ReservasView {
 
     }
 
-    private static void mostrarReservasPorEstado(EstadoReservaEnum estado) throws SQLException {
+    static void mostrarReservasPorEstado(EstadoReservaEnum estado) throws SQLException {
         List<Reserva> reservas = reservaController.obtenerReservasPorEstado(estado.getEstado());
-        System.out.println(estado.getEstado());
         System.out.println("--------------- reservas " + estado.getEstado() + " ----------------------------");
         System.out.println("RESERVAS");
         reservas.forEach(reserva -> {

@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import database.MySQLConnection;
+import models.Caja;
 import models.Pago;
+import models.Reserva;
+import models.Usuario;
 
 public class PagoRepository extends AbstractGenericRepository<Pago, Integer> {
 
@@ -18,8 +21,8 @@ public class PagoRepository extends AbstractGenericRepository<Pago, Integer> {
     @Override
     protected Pago mapeoEntidad(ResultSet rs) throws SQLException {
         return new Pago(rs.getInt("id"), rs.getDouble("cantidad"), rs.getDate("fecha"),
-                rs.getString("descripcion"), rs.getInt("usuarios_id"), rs.getInt("cajas_id"),
-                rs.getInt("reservas_id"));
+                rs.getString("descripcion"), new Usuario(rs.getInt("usuarios_id")), new Caja(rs.getInt("cajas_id")),
+                new Reserva(rs.getInt("reservas_id")));
     }
 
     @Override

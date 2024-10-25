@@ -14,6 +14,10 @@ public class Caja {
     public Caja() {
     }
 
+    public Caja(Integer id) {
+        this.id = id;
+    }
+
     public Caja(Boolean activa, Double montoApertura, Double montoCierre, Date fechaApertura,
             Date fechaCierre, Usuario usuario) {
         this.activa = activa;
@@ -22,17 +26,6 @@ public class Caja {
         this.fechaApertura = fechaApertura;
         this.fechaCierre = fechaCierre;
         this.usuario = usuario;
-    }
-
-    public Caja(Integer id, Boolean activa, Double montoApertura, Double montoCierre, Date fechaApertura,
-            Date fechaCierre, Integer usuarioId) {
-        this.id = id;
-        this.activa = activa;
-        this.montoApertura = montoApertura;
-        this.montoCierre = montoCierre;
-        this.fechaApertura = fechaApertura;
-        this.fechaCierre = fechaCierre;
-        // this.usuario = usuario;
     }
 
     public Caja(Integer id, Boolean activa, Double montoApertura, Double montoCierre, Date fechaApertura,

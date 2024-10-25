@@ -102,8 +102,8 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             stmt.setString(7, reserva.getDestino());
 
             stmt.setDouble(8, reserva.getPrecioDiario() != null ? reserva.getPrecioDiario() : 0);
-            stmt.setDouble(9, reserva.getPagadoTotal() != null ? reserva.getPagadoTotal() : 0);
-            stmt.setDouble(10, reserva.getPrecioTotal() != null ? reserva.getPrecioTotal() : 0);
+            stmt.setDouble(9, reserva.getPrecioTotal() != null ? reserva.getPrecioTotal() : 0);
+            stmt.setDouble(10, reserva.getPagadoTotal() != null ? reserva.getPagadoTotal() : 0);
 
             stmt.setString(11, reserva.getEstado());
 
