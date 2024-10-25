@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.MySQLConnection;
+import models.Cliente;
 import models.Habitacion;
 import models.PrecioHabitacion;
 import models.Reserva;
@@ -38,7 +39,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         String sql = "INSERT INTO reservas (checkIn, checkOut, fechaCreacion, fechaInicio, fechaFin, origen, destino, precioDiario, precioTotal, pagadoTotal, estado, habitaciones_id, precios_habitaciones_id, usuarios_id ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             stmt.setDate(1, DateUtils.transformDateUtilToSql(reserva.getCheckIn()));
             stmt.setDate(2, DateUtils.transformDateUtilToSql(reserva.getCheckOut()));
@@ -60,6 +61,27 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             stmt.setInt(14, reserva.getUsuario().getId());
 
             stmt.executeUpdate();
+
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int reservaId = generatedKeys.getInt(1);
+
+                insertarClientesReserva(conn, reserva.getClientes(), reservaId);
+            } else {
+                throw new SQLException("Error al obtener el ID de la reserva insertada.");
+            }
+        }
+    }
+
+    private void insertarClientesReserva(Connection conn, List<Cliente> clientes, int reservaId) throws SQLException {
+        String sqlClientesReservas = "INSERT INTO reservas_clientes (clientes_id, reservas_id) VALUES (?, ?)";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sqlClientesReservas)) {
+            for (Cliente cliente : clientes) {
+                stmt.setInt(1, cliente.getId());
+                stmt.setInt(2, reservaId);
+                stmt.executeUpdate();
+            }
         }
     }
 

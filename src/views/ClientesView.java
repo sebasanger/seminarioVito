@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import controllers.ClienteController;
 import models.Cliente;
+import models.Reserva;
 
 public class ClientesView {
 
@@ -38,7 +39,7 @@ public class ClientesView {
                     actualizarCliente();
                     break;
                 case 4:
-                    eliminarReserva();
+                    eliminarCliente();
                     break;
                 case 5:
                     return;
@@ -71,10 +72,11 @@ public class ClientesView {
             cliente.setNombre(numbre);
             cliente.setApellido(apellido);
 
-            System.out.println("Huesped generado correctamente");
             try {
                 clienteController.crear(cliente);
+                System.out.println("Huesped generado correctamente");
             } catch (SQLException e) {
+                System.out.println("Error al generar el huesped, intentelo nuevamente");
                 crearCliente();
             }
 
@@ -100,27 +102,109 @@ public class ClientesView {
 
     }
 
-    private static void actualizarCliente() throws SQLException {
-        System.out.print("Ingrese el ID de la reserva a actualizar: ");
-        int id = scanner.nextInt();
-        Cliente reserva = clienteController.obtenerPorId(id);
-        if (reserva != null) {
-            // Actualizar campos
-            System.out.print("Ingrese el nuevo precio diario: ");
-            String nuevoNombre = scanner.next();
-            reserva.setNombre(nuevoNombre);
-            // reservaController.actualizar(reserva);
-            System.out.println("Cliente actualizado.");
+    private static void eliminarCliente() throws SQLException {
+        System.out.print("Ingrese el documento del cliente a eliminar: ");
+        String documento = scanner.next();
+        Cliente cliente = clienteController.obtenerPorDocumento(documento);
+
+        if (cliente != null) {
+            try {
+                clienteController.eliminar(cliente.getId());
+                System.out.println("Cliente eliminado con éxito.");
+            } catch (SQLException e) {
+                System.out.println("Error al querer eliminar el cliente, Intentar nuevamente.");
+                eliminarCliente();
+            }
+
         } else {
-            System.out.println("Cliente no encontrado.");
+            System.out.println("Cliente no encontrado busque nuevamente.");
+            eliminarCliente();
         }
     }
 
-    private static void eliminarReserva() throws SQLException {
-        System.out.print("Ingrese el ID del cliente a eliminar: ");
-        int id = scanner.nextInt();
-        clienteController.eliminar(id);
-        System.out.println("Cliente eliminado con éxito.");
+    private static void actualizarCliente() throws SQLException {
+        System.out.print("Ingrese el documento del cliente: ");
+        String documento = scanner.next();
+        Cliente cliente = clienteController.obtenerPorDocumento(documento);
+        if (cliente != null) {
+            System.out.println(cliente);
+            menuActualizarCliente(cliente);
+
+        } else {
+            System.out.println("Cliente no encontrado busque nuevamente.");
+            actualizarCliente();
+        }
+    }
+
+    public static void menuActualizarCliente(Cliente cliente) throws SQLException {
+        boolean continuar = true;
+        while (continuar) {
+            System.out.println("\n--- Menú de Actualización de Cliente ---");
+            System.out.println(
+                    "\n--- Realice los cambios y presione 5 cuando tenga todos los cambios que desea sobre la reserva para actualizarla ---");
+            System.out.println("0. Cancelar");
+            System.out.println("1. Actualizar nombre");
+            System.out.println("2. Actualizar apellido");
+            System.out.println("3. Actualizar email");
+            System.out.println("4. Actualizar documento");
+            System.out.println("5. Ejecutar actualizacion");
+
+            System.out.print("\nSeleccione una opción: ");
+            int opcion = scanner.nextInt();
+
+            switch (opcion) {
+                case 0:
+                    continuar = false;
+                    System.out.println("Saliendo del menú de actualización...");
+                    break;
+                case 1:
+                    actualizarNombre(cliente);
+                    break;
+                case 2:
+                    actualizarApellido(cliente);
+                    break;
+                case 3:
+                    actualizarEmail(cliente);
+                    break;
+                case 4:
+                    actualizarDocumento(cliente);
+                    break;
+                case 5:
+                    System.out.println("Ejecutando actualizacion.");
+                    System.out.println(cliente);
+                    clienteController.actualizar(cliente);
+                    continuar = false;
+                    break;
+                default:
+                    System.out.println("Opción no válida. Intente nuevamente.");
+                    menuActualizarCliente(cliente);
+            }
+        }
+
+    }
+
+    private static void actualizarNombre(Cliente cliente) {
+        System.out.print("Ingrese el nuevo nombre: ");
+        String nuevoNombre = scanner.next();
+        cliente.setNombre(nuevoNombre);
+    }
+
+    private static void actualizarApellido(Cliente cliente) {
+        System.out.print("Ingrese el nuevo apellido: ");
+        String nuevoNombre = scanner.next();
+        cliente.setApellido(nuevoNombre);
+    }
+
+    private static void actualizarEmail(Cliente cliente) {
+        System.out.print("Ingrese el nuevo email: ");
+        String nuevoNombre = scanner.next();
+        cliente.setEmail(nuevoNombre);
+    }
+
+    private static void actualizarDocumento(Cliente cliente) {
+        System.out.print("Ingrese el nuevo documento: ");
+        String nuevoNombre = scanner.next();
+        cliente.setDocumento(nuevoNombre);
     }
 
 }
