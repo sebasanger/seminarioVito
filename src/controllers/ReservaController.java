@@ -3,6 +3,7 @@ package controllers;
 import java.sql.SQLException;
 import java.util.List;
 
+import exceptions.PagoFaltanteException;
 import models.Reserva;
 import services.ReservaService;
 
@@ -23,7 +24,7 @@ public class ReservaController extends AbstractGenericController<Reserva, Intege
         this.reservaService.generarCheckInReserva(reservaId);
     }
 
-    public void generarCheckOut(Integer reservaId) throws SQLException {
+    public void generarCheckOut(Integer reservaId) throws SQLException, PagoFaltanteException {
         this.reservaService.generarCheckOutReserva(reservaId);
     }
 

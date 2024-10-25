@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import controllers.ReservaController;
+import exceptions.PagoFaltanteException;
 import models.EstadoReservaEnum;
 import models.Reserva;
 
@@ -53,6 +54,9 @@ public class ReservasDetailView {
             System.err.println(e);
             System.out.println("Error al generar el check in, Intetelo nuevamente.");
             generarCheckOutReserva();
+        } catch (PagoFaltanteException e) {
+            System.out.println("Redirigiendo a generacion de pago...");
+            PagosView.crearPago();
         }
 
     }

@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+import exceptions.PagoFaltanteException;
 import models.EstadoReservaEnum;
 import models.Reserva;
 import repositories.ClienteRepository;
@@ -97,7 +98,12 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
         reservaRepository.cambiarEstadoReserva(reservaId, EstadoReservaEnum.ACTIVA);
     }
 
-    public void generarCheckOutReserva(Integer reservaId) throws SQLException {
+    public void generarCheckOutReserva(Integer reservaId) throws SQLException, PagoFaltanteException {
+        Reserva reserva = reservaRepository.obtenerPorId(reservaId);
+        if (reserva.getPagadoTotal() < reserva.getPrecioTotal()) {
+            System.out.println("Faltante: " + (reserva.getPrecioTotal() - reserva.getPagadoTotal()));
+            throw new PagoFaltanteException();
+        }
         reservaRepository.cambiarEstadoReserva(reservaId, EstadoReservaEnum.FINALIZADA);
     }
 
