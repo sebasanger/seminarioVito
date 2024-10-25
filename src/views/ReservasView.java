@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import controllers.ReservaController;
 import models.Cliente;
+import models.EstadoReservaEnum;
 import models.Habitacion;
 import models.PrecioHabitacion;
 import models.Reserva;
@@ -29,10 +30,11 @@ public class ReservasView {
             System.out.println("===========================================");
             System.out.println();
             System.out.println("1. Crear Reserva");
-            System.out.println("2. Ver Reservas");
+            System.out.println("2. Ver todas las Reservas");
             System.out.println("3. Actualizar Reserva");
             System.out.println("4. Eliminar Reserva");
-            System.out.println("5. Volver al Menú Principal");
+            System.out.println("5. Ver reservas por estado");
+            System.out.println("6. Volver al Menú Principal");
             System.out.println();
             System.out.print("Seleccione una opción: ");
             int opcion = scanner.nextInt();
@@ -51,6 +53,8 @@ public class ReservasView {
                     eliminarReserva();
                     break;
                 case 5:
+                    verReservasPorEstado();
+                case 6:
                     return;
                 default:
                     System.out.println("Opción no válida, intenta de nuevo.");
@@ -149,6 +153,56 @@ public class ReservasView {
         int id = scanner.nextInt();
         reservaController.eliminar(id);
         System.out.println("Reserva eliminada con éxito.");
+    }
+
+    private static void verReservasPorEstado() throws SQLException {
+
+        System.out.println("===========================================");
+        System.out.println("           VSUALIZACION DE RESERVAS             ");
+        System.out.println("===========================================");
+        System.out.println();
+        System.out.println("1. Reservas activas");
+        System.out.println("2. Reservas pendientes");
+        System.out.println("3. Reservas finalizadas");
+        System.out.println("4. Reservas eliminadas");
+        System.out.println();
+        System.out.print("Seleccione una opción: ");
+        int opcion = scanner.nextInt();
+
+        switch (opcion) {
+            case 1:
+                mostrarReservasPorEstado(EstadoReservaEnum.ACTIVA);
+                break;
+            case 2:
+                mostrarReservasPorEstado(EstadoReservaEnum.PENDIENTE);
+                break;
+            case 3:
+                mostrarReservasPorEstado(EstadoReservaEnum.FINALIZADA);
+                break;
+            case 4:
+                mostrarReservasPorEstado(EstadoReservaEnum.ELIMINADA);
+                break;
+            default:
+                System.out.println("Opción no válida, intenta de nuevo.");
+                verReservasPorEstado();
+                break;
+        }
+        verReservasPorEstado();
+
+    }
+
+    private static void mostrarReservasPorEstado(EstadoReservaEnum estado) throws SQLException {
+        List<Reserva> reservas = reservaController.obtenerReservasPorEstado(estado.getEstado());
+        System.out.println(estado.getEstado());
+        System.out.println("--------------- reservas " + estado.getEstado() + " ----------------------------");
+        System.out.println("RESERVAS");
+        reservas.forEach(reserva -> {
+            System.out.println("RESERVA ID " + reserva.getId());
+            System.out.println(reserva);
+            System.out.println("======================================");
+        });
+        System.out.println("----------------------------------------------------------------------------");
+
     }
 
     private static void limpiarConsola() {

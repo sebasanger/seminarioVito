@@ -1,10 +1,10 @@
 package models;
 
 public enum EstadoReservaEnum {
-    PENDIENTE("PENDIENTE"),
-    FINALIZADA("FINALIZADA"),
-    ACTIVA("ACTIVA"),
-    ELIMINADA("ELIMINADA");
+    PENDIENTE("pendiente"),
+    FINALIZADA("finalizada"),
+    ACTIVA("activa"),
+    ELIMINADA("eliminada");
 
     private final String estado;
 

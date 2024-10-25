@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 import controllers.ClienteController;
 import models.Cliente;
-import models.Reserva;
 
 public class ClientesView {
 

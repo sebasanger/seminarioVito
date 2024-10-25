@@ -47,14 +47,7 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
 
     @Override
     public List<Reserva> obtenerTodos() throws SQLException {
-
-        List<Reserva> reservas = reservaRepository.obtenerTodos();
-
-        for (Reserva reserva : reservas) {
-            reserva = this.obtenerDatosRelacionadosReserva(reserva);
-        }
-
-        return reservas;
+        return this.obtenerDatosRelacionadosListaReserva(this.reservaRepository.obtenerTodos());
     }
 
     @Override
@@ -65,12 +58,20 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     }
 
     public List<Reserva> obtenerReservasPorEstado(String status) throws SQLException {
-        return this.reservaRepository.obtenerReservasPorEstado(status);
+        return this.obtenerDatosRelacionadosListaReserva(this.reservaRepository.obtenerReservasPorEstado(status));
     }
 
     private Double getPrecioTotal(java.util.Date fechaInicio, java.util.Date fechaFin, Double precioDiario) {
         Long cantidadDias = DateUtils.getDiffInDays(fechaInicio, fechaFin);
         return cantidadDias * precioDiario;
+    }
+
+    public List<Reserva> obtenerDatosRelacionadosListaReserva(List<Reserva> reservas) throws SQLException {
+        for (Reserva reserva : reservas) {
+            reserva = this.obtenerDatosRelacionadosReserva(reserva);
+        }
+
+        return reservas;
     }
 
     private Reserva obtenerDatosRelacionadosReserva(Reserva reserva) throws SQLException {
