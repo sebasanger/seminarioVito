@@ -2,6 +2,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import views.ClientesView;
+import views.ConsumosView;
 import views.PagosView;
 import views.ReservasView;
 
@@ -24,7 +25,8 @@ public class App {
             System.out.println("0. Salir");
             System.out.println("1. Gestionar Reservas");
             System.out.println("2. Gestionar Clientes");
-            System.out.println("3. Gestionar pagos");
+            System.out.println("3. Gestionar Pagos");
+            System.out.println("4. Gestionar Consumiciones");
 
             System.out.println();
             System.out.print("Seleccione una opción: ");
@@ -43,6 +45,9 @@ public class App {
                     break;
                 case 3:
                     PagosView.mostrarMenuPagos();
+                    break;
+                case 4:
+                    ConsumosView.mostrarMenuConsumos();
                     break;
                 default:
                     System.out.println("Opción no válida, intenta de nuevo.");
