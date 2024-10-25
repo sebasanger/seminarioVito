@@ -1,6 +1,8 @@
 package services;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import models.EstadoReservaEnum;
@@ -61,6 +63,15 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
         return this.obtenerDatosRelacionadosListaReserva(this.reservaRepository.obtenerReservasPorEstado(status));
     }
 
+    public List<Reserva> obtenerReservasPorEstadoYFecha(String status, Boolean porFechaFin)
+            throws SQLException {
+
+        LocalDate fechaActual = LocalDate.now();
+
+        return this.obtenerDatosRelacionadosListaReserva(
+                this.reservaRepository.obtenerReservasPorEstadoYFecha(status, Date.valueOf(fechaActual), porFechaFin));
+    }
+
     private Double getPrecioTotal(java.util.Date fechaInicio, java.util.Date fechaFin, Double precioDiario) {
         Long cantidadDias = DateUtils.getDiffInDays(fechaInicio, fechaFin);
         return cantidadDias * precioDiario;
@@ -80,6 +91,14 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
         reserva.setUsuario(usuarioRepository.obtenerPorId(reserva.getUsuario().getId()));
         reserva.setClientes(clienteRepository.obtenerClientesReserva(reserva.getId()));
         return reserva;
+    }
+
+    public void generarCheckInReserva(Integer reservaId) throws SQLException {
+        reservaRepository.cambiarEstadoReserva(reservaId, EstadoReservaEnum.ACTIVA);
+    }
+
+    public void generarCheckOutReserva(Integer reservaId) throws SQLException {
+        reservaRepository.cambiarEstadoReserva(reservaId, EstadoReservaEnum.FINALIZADA);
     }
 
 }

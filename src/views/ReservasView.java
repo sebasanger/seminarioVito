@@ -34,7 +34,9 @@ public class ReservasView {
             System.out.println("3. Actualizar Reserva");
             System.out.println("4. Eliminar Reserva");
             System.out.println("5. Ver reservas por estado");
-            System.out.println("6. Volver al Menú Principal");
+            System.out.println("6. Generar check in");
+            System.out.println("7. Generar check out");
+            System.out.println("8. Volver al Menú Principal");
             System.out.println();
             System.out.print("Seleccione una opción: ");
             int opcion = scanner.nextInt();
@@ -55,6 +57,12 @@ public class ReservasView {
                 case 5:
                     verReservasPorEstado();
                 case 6:
+                    ReservasDetailView.generarCheckInReserva();
+                    break;
+                case 7:
+                    ReservasDetailView.generarCheckOutReserva();
+                    break;
+                case 8:
                     return;
                 default:
                     System.out.println("Opción no válida, intenta de nuevo.");

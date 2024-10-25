@@ -1,6 +1,7 @@
 package repositories;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import database.MySQLConnection;
 import models.Cliente;
+import models.EstadoReservaEnum;
 import models.Habitacion;
 import models.PrecioHabitacion;
 import models.Reserva;
@@ -132,6 +134,44 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
         }
         return reservas;
+    }
+
+    public List<Reserva> obtenerReservasPorEstadoYFecha(String status, Date fechaActual, Boolean porFechaFin)
+            throws SQLException {
+        String sql = "";
+        if (porFechaFin == true) {
+            sql = "SELECT * FROM " + getTabla() + " WHERE estado = ? AND fechaFin = ?";
+        } else {
+            sql = "SELECT * FROM " + getTabla() + " WHERE estado = ? AND fechaInicio = ?";
+        }
+        List<Reserva> reservas = new ArrayList<>();
+
+        try (Connection conn = MySQLConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, status);
+            stmt.setDate(2, fechaActual);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    reservas.add(mapeoEntidad(rs));
+                }
+            }
+
+        }
+        return reservas;
+    }
+
+    public void cambiarEstadoReserva(Integer reservaId, EstadoReservaEnum estado) throws SQLException {
+        String sql = "UPDATE reservas SET  estado = ? WHERE id = ?";
+
+        try (Connection conn = MySQLConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, estado.getEstado());
+            stmt.setInt(2, reservaId);
+            stmt.executeUpdate();
+        }
     }
 
 }

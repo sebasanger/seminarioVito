@@ -50,6 +50,7 @@ public class ClientesView {
 
     public static Cliente crearCliente() throws SQLException {
         System.out.println("Ingrese el documento del huesped : ");
+
         String documento = scanner.next();
         Cliente cliente = clienteController.obtenerPorDocumento(documento);
 
@@ -58,13 +59,14 @@ public class ClientesView {
             cliente = new Cliente();
 
             System.out.print("Ingrese el nombre del huesped :");
-            String numbre = scanner.next();
+            scanner.nextLine();
+            String numbre = scanner.nextLine();
 
             System.out.print("Ingrese el apellido del huesped :");
-            String apellido = scanner.next();
+            String apellido = scanner.nextLine();
 
             System.out.print("Ingrese el email del huesped :");
-            String email = scanner.next();
+            String email = scanner.nextLine();
 
             cliente.setDocumento(documento);
             cliente.setEmail(email);
@@ -112,6 +114,7 @@ public class ClientesView {
                 System.out.println("Cliente eliminado con éxito.");
             } catch (SQLException e) {
                 System.out.println("Error al querer eliminar el cliente, Intentar nuevamente.");
+                System.out.println("Si el cliente esta asociado a una reserva no se permite su eliminacion. ");
                 eliminarCliente();
             }
 
@@ -184,25 +187,29 @@ public class ClientesView {
 
     private static void actualizarNombre(Cliente cliente) {
         System.out.print("Ingrese el nuevo nombre: ");
-        String nuevoNombre = scanner.next();
+        scanner.nextLine();
+        String nuevoNombre = scanner.nextLine();
         cliente.setNombre(nuevoNombre);
     }
 
     private static void actualizarApellido(Cliente cliente) {
         System.out.print("Ingrese el nuevo apellido: ");
-        String nuevoNombre = scanner.next();
+        scanner.nextLine();
+        String nuevoNombre = scanner.nextLine();
         cliente.setApellido(nuevoNombre);
     }
 
     private static void actualizarEmail(Cliente cliente) {
         System.out.print("Ingrese el nuevo email: ");
-        String nuevoNombre = scanner.next();
+        scanner.nextLine();
+        String nuevoNombre = scanner.nextLine();
         cliente.setEmail(nuevoNombre);
     }
 
     private static void actualizarDocumento(Cliente cliente) {
         System.out.print("Ingrese el nuevo documento: ");
-        String nuevoNombre = scanner.next();
+        scanner.nextLine();
+        String nuevoNombre = scanner.nextLine();
         cliente.setDocumento(nuevoNombre);
     }
 

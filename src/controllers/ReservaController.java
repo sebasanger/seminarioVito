@@ -19,4 +19,17 @@ public class ReservaController extends AbstractGenericController<Reserva, Intege
         return this.reservaService.obtenerReservasPorEstado(status);
     }
 
+    public void generarCheckIn(Integer reservaId) throws SQLException {
+        this.reservaService.generarCheckInReserva(reservaId);
+    }
+
+    public void generarCheckOut(Integer reservaId) throws SQLException {
+        this.reservaService.generarCheckOutReserva(reservaId);
+    }
+
+    public List<Reserva> obtenerReservasPorEstadoYFecha(String status, Boolean porFechaFin)
+            throws SQLException {
+        return this.reservaService.obtenerReservasPorEstadoYFecha(status, porFechaFin);
+    }
+
 }
