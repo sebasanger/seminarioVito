@@ -95,4 +95,11 @@ public class Caja {
         this.usuario = usuario;
     }
 
+    @Override
+    public String toString() {
+        return "Caja [id=" + id + ", activa=" + activa + ", montoApertura=" + montoApertura + ", montoCierre="
+                + montoCierre + ", fechaApertura=" + fechaApertura + ", fechaCierre=" + fechaCierre + ", usuario="
+                + usuario + "]";
+    }
+
 }

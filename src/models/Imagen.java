@@ -54,4 +54,9 @@ public class Imagen {
         this.tipo = tipo;
     }
 
+    @Override
+    public String toString() {
+        return "Imagen [id=" + id + ", path=" + path + ", titulo=" + titulo + ", tipo=" + tipo + "]";
+    }
+
 }

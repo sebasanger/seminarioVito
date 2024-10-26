@@ -90,4 +90,10 @@ public class EntradaProducto {
         this.usuario = usuario;
     }
 
+    @Override
+    public String toString() {
+        return "EntradaProducto [id=" + id + ", precioUnitario=" + precioUnitario + ", cantidad=" + cantidad
+                + ", fecha=" + fecha + ", producto=" + producto + ", usuario=" + usuario + "]";
+    }
+
 }

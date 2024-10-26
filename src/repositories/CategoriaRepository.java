@@ -17,7 +17,7 @@ public class CategoriaRepository extends AbstractGenericRepository<Categoria, In
 
     @Override
     protected Categoria mapeoEntidad(ResultSet rs) throws SQLException {
-        return new Categoria(rs.getInt("id"), rs.getString("nombre"));
+        return new Categoria(rs.getInt("id"), rs.getString("categoria"));
     }
 
     @Override
