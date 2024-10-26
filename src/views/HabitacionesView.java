@@ -24,7 +24,8 @@ public class HabitacionesView {
             System.out.println("2. Ver Habitaciones");
             System.out.println("3. Actualizar Habitacion");
             System.out.println("4. Eliminar Habitacion");
-            System.out.println("5. Volver al Menú Principal");
+            System.out.println("5. Cambiar estado de habitacion");
+            System.out.println("6. Volver al Menú Principal");
             System.out.println();
             System.out.print("Seleccione una opción: ");
             int opcion = scanner.nextInt();
@@ -43,6 +44,9 @@ public class HabitacionesView {
                     eliminarHabitacion();
                     break;
                 case 5:
+                    cambiarEstadoHabitacion();
+                    break;
+                case 6:
                     return;
                 default:
                     System.out.println("Opción no válida, intenta de nuevo.");
@@ -146,7 +150,7 @@ public class HabitacionesView {
 
     private static void actualizarHabitacion() throws SQLException {
         verHabitaciones();
-        System.out.print("Ingrese el id de la marca a actualizar: ");
+        System.out.print("Ingrese el id de la habitacion a actualizar: ");
         Integer id = scanner.nextInt();
         Habitacion habitacion = habitacionController.obtenerPorId(id);
         if (habitacion != null) {
@@ -178,6 +182,28 @@ public class HabitacionesView {
         } else {
             System.out.println("Habitacion no encontrada busque nuevamente.");
             actualizarHabitacion();
+        }
+    }
+
+    private static void cambiarEstadoHabitacion() throws SQLException {
+        verHabitaciones();
+        System.out.print("Ingrese el id de la habitacion a cambiar el estado: ");
+        Integer id = scanner.nextInt();
+        Habitacion habitacion = habitacionController.obtenerPorId(id);
+        if (habitacion != null) {
+
+            System.out.println("[0] para dejarla deshabilitada :");
+            System.out.println("[1] para dejarla habilitada :");
+            Integer respuesta = scanner.nextInt();
+            habitacion.setHabilitada(respuesta == 1 ? true : false);
+
+            habitacionController.actualizar(habitacion);
+
+            System.out.println(habitacion);
+            System.out.println("Estado actualizado correctamente.");
+        } else {
+            System.out.println("Habitacion no encontrada busque nuevamente.");
+            cambiarEstadoHabitacion();
         }
     }
 
