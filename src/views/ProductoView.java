@@ -37,7 +37,7 @@ public class ProductoView {
                     verProductos();
                     break;
                 case 3:
-                    eliminarProducto();
+                    actualizarProducto();
                     break;
                 case 4:
                     eliminarProducto();
@@ -71,9 +71,11 @@ public class ProductoView {
         Integer stock = scanner.nextInt();
         producto.setStock(stock);
 
-        // TODO: Setear la categoria y marca por seleccionadores
-        producto.setCategoria(new Categoria(1));
-        producto.setMarca(new Marca(1));
+        Categoria categoria = CategoriasView.obtenerSeleccionCategoria();
+        Marca marca = MarcasView.obtenerSeleccionMarca();
+
+        producto.setCategoria(categoria);
+        producto.setMarca(marca);
 
         try {
             productoController.crear(producto);
@@ -117,6 +119,46 @@ public class ProductoView {
         } else {
             System.out.println("Producto no encontrado busque nuevamente.");
             eliminarProducto();
+        }
+    }
+
+    private static void actualizarProducto() throws SQLException {
+        verProductos();
+        System.out.print("Ingrese el id del producto a actualizar: ");
+        Integer idProducto = scanner.nextInt();
+        Producto producto = productoController.obtenerPorId(idProducto);
+        if (producto != null) {
+            scanner.nextLine();
+
+            System.out.print("Ingrese el nombre del producto :");
+            String nombreProducto = scanner.nextLine();
+            producto.setNombre(nombreProducto);
+
+            System.out.print("Ingrese la descripcion del producto :");
+            String descripcion = scanner.nextLine();
+            producto.setDescripcion(descripcion);
+
+            System.out.print("Ingrese el precio :");
+            Double precio = scanner.nextDouble();
+            producto.setPrecio(precio);
+
+            System.out.print("Ingrese el stock actual :");
+            Integer stock = scanner.nextInt();
+            producto.setStock(stock);
+
+            Categoria categoria = CategoriasView.obtenerSeleccionCategoria();
+            Marca marca = MarcasView.obtenerSeleccionMarca();
+
+            producto.setCategoria(categoria);
+            producto.setMarca(marca);
+
+            productoController.actualizar(producto);
+
+            System.out.println(producto);
+            System.out.println("Producto actualizado correctamente.");
+        } else {
+            System.out.println("Producto no encontrado busque nuevamente.");
+            actualizarProducto();
         }
     }
 
