@@ -126,8 +126,8 @@ public class MarcasView {
     private static void actualizarMarca() throws SQLException {
         verMarcas();
         System.out.print("Ingrese el id de la marca a actualizar: ");
-        Integer idPrecio = scanner.nextInt();
-        Marca marca = marcaController.obtenerPorId(idPrecio);
+        Integer id = scanner.nextInt();
+        Marca marca = marcaController.obtenerPorId(id);
         if (marca != null) {
             scanner.nextLine();
 
