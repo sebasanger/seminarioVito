@@ -34,6 +34,7 @@ public class Producto {
         this.precio = precio;
         this.stock = stock;
         this.marca = new Marca(marcasId);
+        this.categoria = new Categoria(categoriaId);
     }
 
     public Producto(Integer id, String nombre, String descripcion, Double precio, Integer stock, Marca marca,

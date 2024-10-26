@@ -1,8 +1,10 @@
 package services;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
+import exceptions.StockInsuficienteException;
 import models.Consumicion;
 import repositories.ConsumicionRepository;
 import repositories.MarcaRepository;
@@ -38,6 +40,23 @@ public class ConsumoService extends AbstractGenericService<Consumicion, Integer>
         }
 
         return consumiciones;
+    }
+
+    public void crearConsumo(Consumicion consumicion) throws SQLException, StockInsuficienteException {
+
+        // TODO: Agregar logica para agregar faltante de pago a la reserva
+
+        Date fechaActual = new Date(new java.util.Date().getTime());
+        consumicion.setFecha(fechaActual);
+
+        consumicion.setPrecioTotal(consumicion.getProducto().getPrecio() * consumicion.getCantidad());
+
+        if (consumicion.getCantidad() > consumicion.getProducto().getStock()) {
+            throw new StockInsuficienteException();
+        }
+
+        consumicionRepository.crear(consumicion);
+
     }
 
 }

@@ -20,10 +20,10 @@ public class HabitacionesView {
             System.out.println("           GESTIÓN DE HABITACIONES             ");
             System.out.println("===========================================");
             System.out.println();
-            System.out.println("1. Crear Cliente");
-            System.out.println("2. Ver Clientes");
-            System.out.println("3. Actualizar Cliente");
-            System.out.println("4. Eliminar Cliente");
+            System.out.println("1. Crear Habitacion");
+            System.out.println("2. Ver Habitaciones");
+            System.out.println("3. Actualizar Habitacion");
+            System.out.println("4. Eliminar Habitacion");
             System.out.println("5. Volver al Menú Principal");
             System.out.println();
             System.out.print("Seleccione una opción: ");

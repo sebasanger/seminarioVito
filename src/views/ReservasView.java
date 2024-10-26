@@ -199,7 +199,7 @@ public class ReservasView {
 
     }
 
-    static void mostrarReservasPorEstado(EstadoReservaEnum estado) throws SQLException {
+    public static void mostrarReservasPorEstado(EstadoReservaEnum estado) throws SQLException {
         List<Reserva> reservas = reservaController.obtenerReservasPorEstado(estado.getEstado());
         System.out.println("--------------- reservas " + estado.getEstado() + " ----------------------------");
         System.out.println("RESERVAS");

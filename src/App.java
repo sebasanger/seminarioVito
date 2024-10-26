@@ -4,6 +4,7 @@ import java.util.Scanner;
 import views.ClientesView;
 import views.ConsumosView;
 import views.PagosView;
+import views.ProductoView;
 import views.ReservasView;
 
 public class App {
@@ -27,6 +28,7 @@ public class App {
             System.out.println("2. Gestionar Clientes");
             System.out.println("3. Gestionar Pagos");
             System.out.println("4. Gestionar Consumiciones");
+            System.out.println("5. Gestionar Productos");
 
             System.out.println();
             System.out.print("Seleccione una opción: ");
@@ -48,6 +50,9 @@ public class App {
                     break;
                 case 4:
                     ConsumosView.mostrarMenuConsumos();
+                    break;
+                case 5:
+                    ProductoView.mostrarMenuProductos();
                     break;
                 default:
                     System.out.println("Opción no válida, intenta de nuevo.");

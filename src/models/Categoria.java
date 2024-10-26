@@ -11,6 +11,10 @@ public class Categoria {
         this.categoria = categoria;
     }
 
+    public Categoria(Integer id) {
+        this.id = id;
+    }
+
     public Categoria(Integer id, String categoria) {
         this.id = id;
         this.categoria = categoria;

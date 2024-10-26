@@ -3,16 +3,22 @@ package views;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-import controllers.ClienteController;
 import controllers.ConsumoController;
-import models.Cliente;
+import controllers.ProductoController;
+import controllers.ReservaController;
+import exceptions.StockInsuficienteException;
 import models.Consumicion;
+import models.EstadoReservaEnum;
+import models.Producto;
+import models.Reserva;
+import models.Usuario;
 
 public class ConsumosView {
 
     private static final Scanner scanner = new Scanner(System.in);
-    private static ClienteController clienteController = new ClienteController();
     private static ConsumoController consumoController = new ConsumoController();
+    private static ProductoController productoController = new ProductoController();
+    private static ReservaController reservaController = new ReservaController();
 
     public static void mostrarMenuConsumos() throws SQLException {
         while (true) {
@@ -47,44 +53,45 @@ public class ConsumosView {
         }
     }
 
-    public static Cliente crearConsumo() throws SQLException {
-        System.out.println("Ingrese el documento del huesped : ");
+    public static void crearConsumo() throws SQLException {
+        ReservasView.mostrarReservasPorEstado(EstadoReservaEnum.ACTIVA);
+        System.out.println("Seleccionar el ID de la reserva : ");
+        Integer idReserva = scanner.nextInt();
+        Reserva reserva = reservaController.obtenerPorId(idReserva);
 
-        String documento = scanner.next();
-        Cliente cliente = clienteController.obtenerPorDocumento(documento);
+        ProductoView.verProductos();
+        System.out.println("Seleccionar el ID del producto : ");
+        Integer idProducto = scanner.nextInt();
+        Producto producto = productoController.obtenerPorId(idProducto);
 
-        if (cliente == null) {
-            System.out.println("No se encontro el cliente en la base de datos");
-            cliente = new Cliente();
+        if (producto != null && reserva != null) {
+            Consumicion consumicion = new Consumicion();
 
-            System.out.print("Ingrese el nombre del huesped :");
-            scanner.nextLine();
-            String numbre = scanner.nextLine();
+            System.out.print("Ingrese la cantidad :");
+            Integer cantidad = scanner.nextInt();
 
-            System.out.print("Ingrese el apellido del huesped :");
-            String apellido = scanner.nextLine();
+            consumicion.setCantidad(cantidad);
+            consumicion.setPrecioUnitario(producto.getPrecio());
+            consumicion.setReserva(reserva);
+            consumicion.setProducto(producto);
 
-            System.out.print("Ingrese el email del huesped :");
-            String email = scanner.nextLine();
-
-            cliente.setDocumento(documento);
-            cliente.setEmail(email);
-            cliente.setNombre(numbre);
-            cliente.setApellido(apellido);
-
+            // TODO: Setear usuario cuando se tenga el login
+            consumicion.setUsuario(new Usuario(1));
             try {
-                clienteController.crear(cliente);
-                System.out.println("Huesped generado correctamente");
+                consumoController.crearConsumo(consumicion);
+                System.out.println("Consumo generado correctamente");
             } catch (SQLException e) {
-                System.out.println("Error al generar el huesped, intentelo nuevamente");
+                System.out.println("Error al generar el consumo, intentelo nuevamente");
+                crearConsumo();
+            } catch (StockInsuficienteException e) {
+                System.out.println("Intente nuevamente con una cantidad menor de producto a comprar.");
                 crearConsumo();
             }
 
         } else {
-            System.out.println("Se obtuvo el cliente de la base de datos por su documento");
-            System.out.println(cliente);
+            System.out.println("No se encontro producto o reserva con ese ID");
+            crearConsumo();
         }
-        return cliente;
 
     }
 
