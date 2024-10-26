@@ -112,4 +112,24 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
         }
     }
 
+    public Double obtenerTotalConsumcionesPorReserva(Integer reservaId) throws SQLException {
+        String sql = "SELECT * FROM " + getTabla() + " WHERE reservas_id = ?";
+        Double total = 0D;
+        Consumicion entidad;
+
+        try (Connection conn = MySQLConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setObject(1, reservaId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    entidad = mapeoEntidad(rs);
+                    total = total + entidad.getPrecioTotal();
+                }
+            }
+        }
+        return total;
+    }
+
 }

@@ -75,8 +75,6 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             if (generatedKeys.next()) {
                 int reservaId = generatedKeys.getInt(1);
 
-                this.eliminarClientesReserva(conn, reservaId);// se elimina para actualizar los clientes de la reserva
-
                 // se vuelven a agregar los clientes a la reserva por si se cambiaron
                 this.insertarClientesReserva(conn, reserva.getClientes(), reservaId);
 
@@ -86,6 +84,8 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
             this.cambiarEstadoHabitacion(reserva.getHabitacion(), reserva.getEstado(), conn);
 
+            System.out.println("Reserva generada correctamente");
+            System.out.println(reserva);
             conn.commit();
         } catch (SQLException e) {
             if (conn != null) {
@@ -137,7 +137,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
         try {
             conn.setAutoCommit(false);
-            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setDate(1, DateUtils.transformDateUtilToSql(reserva.getCheckIn()));
             stmt.setDate(2, DateUtils.transformDateUtilToSql(reserva.getCheckOut()));
@@ -158,16 +158,12 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             stmt.setInt(13, reserva.getPrecioHabitacion().getId());
             stmt.setInt(14, reserva.getUsuario().getId());
             stmt.setInt(15, reserva.getId());
-
+            // TODO: setear tambien checkin
             stmt.executeUpdate();
 
-            ResultSet generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int reservaId = generatedKeys.getInt(1);
-                insertarClientesReserva(conn, reserva.getClientes(), reservaId);
-            } else {
-                throw new SQLException("Error al obtener el ID de la reserva insertada.");
-            }
+            this.eliminarClientesReserva(conn, reserva.getId());// se elimina para actualizar los clientes de la reserva
+
+            insertarClientesReserva(conn, reserva.getClientes(), reserva.getId());
 
             this.cambiarEstadoHabitacion(reserva.getHabitacion(), reserva.getEstado(), conn);
 

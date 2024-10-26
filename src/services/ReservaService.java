@@ -9,6 +9,7 @@ import exceptions.PagoFaltanteException;
 import models.EstadoReservaEnum;
 import models.Reserva;
 import repositories.ClienteRepository;
+import repositories.ConsumicionRepository;
 import repositories.HabitacionRepository;
 import repositories.PrecioHabitacionRepository;
 import repositories.ReservaRepository;
@@ -21,6 +22,7 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     private UsuarioRepository usuarioRepository = new UsuarioRepository();
     private HabitacionRepository habitacionRepository = new HabitacionRepository();
     private ClienteRepository clienteRepository = new ClienteRepository();
+    private ConsumicionRepository consumicionRepository = new ConsumicionRepository();
 
     @Override
     protected ReservaRepository getRepository() {
@@ -32,17 +34,42 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
 
         reserva.setPrecioDiario(reserva.getPrecioHabitacion().getPrecio());
 
-        Double precioTotal = getPrecioTotal(reserva.getFechaInicio(), reserva.getFechaFin(), reserva.getPrecioDiario());
+        Double precioTotal = getPrecioTotal(reserva.getFechaInicio(), reserva.getFechaFin(), reserva.getPrecioDiario(),
+                null);
         reserva.setPrecioTotal(precioTotal);
         reserva.setPagadoTotal((double) 0);
 
         if (DateUtils.mismaFecha(reserva.getFechaInicio(), reserva.getFechaCreacion())) {
+            reserva.setCheckIn(reserva.getFechaCreacion());
             reserva.setEstado(EstadoReservaEnum.ACTIVA.getEstado());
         } else {
             reserva.setEstado(EstadoReservaEnum.PENDIENTE.getEstado());
         }
 
         reservaRepository.crear(reserva);
+    }
+
+    @Override
+    public void actualizar(Reserva reserva) throws SQLException {
+
+        // evaluamos el precio nuevamente por el precio diario mas las consumciones
+        // realizadas por la reserva
+        reserva.setPrecioDiario(reserva.getPrecioHabitacion().getPrecio());
+        Double precioTotal = getPrecioTotal(reserva.getFechaInicio(), reserva.getFechaFin(), reserva.getPrecioDiario(),
+                reserva.getId());
+        reserva.setPrecioTotal(precioTotal);
+
+        // actualizamos si se cambia para el dia de la fecha la reserva cambiamos el
+        // estado de la reserva a activa sino quedaria a pendiente
+        LocalDate fechaActual = LocalDate.now();
+        if (DateUtils.mismaFecha(reserva.getFechaInicio(), Date.valueOf(fechaActual))) {
+            reserva.setCheckIn(Date.valueOf(fechaActual));
+            reserva.setEstado(EstadoReservaEnum.ACTIVA.getEstado());
+        } else {
+            reserva.setEstado(EstadoReservaEnum.PENDIENTE.getEstado());
+        }
+
+        reservaRepository.actualizar(reserva);
     }
 
     @Override
@@ -70,9 +97,14 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
                 this.reservaRepository.obtenerReservasPorEstadoYFecha(status, Date.valueOf(fechaActual), porFechaFin));
     }
 
-    private Double getPrecioTotal(java.util.Date fechaInicio, java.util.Date fechaFin, Double precioDiario) {
+    private Double getPrecioTotal(java.util.Date fechaInicio, java.util.Date fechaFin, Double precioDiario,
+            Integer reservaId) throws SQLException {
+        Double totalConsumiciones = 0D;
+        if (reservaId != null) {
+            totalConsumiciones = consumicionRepository.obtenerTotalConsumcionesPorReserva(reservaId);
+        }
         Long cantidadDias = DateUtils.getDiffInDays(fechaInicio, fechaFin);
-        return cantidadDias * precioDiario;
+        return (cantidadDias * precioDiario) + totalConsumiciones;
     }
 
     public List<Reserva> obtenerDatosRelacionadosListaReserva(List<Reserva> reservas) throws SQLException {
