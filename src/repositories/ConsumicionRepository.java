@@ -10,8 +10,13 @@ import java.util.List;
 
 import database.MySQLConnection;
 import models.Consumicion;
+import models.Producto;
+import models.Reserva;
 
 public class ConsumicionRepository extends AbstractGenericRepository<Consumicion, Integer> {
+
+    private ProductoRepository productoRepository = new ProductoRepository();
+    private ReservaRepository reservaRepository = new ReservaRepository();
 
     @Override
     protected String getTabla() {
@@ -44,18 +49,47 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
     @Override
     public void crear(Consumicion consumicion) throws SQLException {
         String sql = "INSERT INTO consumiciones (cantidad, precioTotal, precioUnitario, fecha, reservas_id, productos_id, usuarios_id) VALUES (?,?,?,?,?,?,?)";
+        Connection conn = null;
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = MySQLConnection.getConnection();
+            conn.setAutoCommit(false); // Comienza la transacción
 
-            stmt.setInt(1, consumicion.getCantidad());
-            stmt.setDouble(2, consumicion.getPrecioTotal());
-            stmt.setDouble(3, consumicion.getPrecioUnitario());
-            stmt.setDate(4, new java.sql.Date(consumicion.getFecha().getTime()));
-            stmt.setInt(5, consumicion.getReserva().getId());
-            stmt.setInt(6, consumicion.getProducto().getId());
-            stmt.setInt(7, consumicion.getUsuario().getId());
-            stmt.executeUpdate();
+            // Actualizar stock del producto
+            Producto producto = consumicion.getProducto();
+            producto.setStock(producto.getStock() - consumicion.getCantidad());
+            productoRepository.actualizar(producto, conn);
+
+            // Actualizar precio total de la reserva
+            Reserva reserva = consumicion.getReserva();
+            reserva.setPrecioTotal(reserva.getPrecioTotal() + consumicion.getPrecioTotal());
+            reservaRepository.actualizar(reserva, conn);
+
+            // Crear la consumición
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, consumicion.getCantidad());
+                stmt.setDouble(2, consumicion.getPrecioTotal());
+                stmt.setDouble(3, consumicion.getPrecioUnitario());
+                stmt.setDate(4, new java.sql.Date(consumicion.getFecha().getTime()));
+                stmt.setInt(5, consumicion.getReserva().getId());
+                stmt.setInt(6, consumicion.getProducto().getId());
+                stmt.setInt(7, consumicion.getUsuario().getId());
+                stmt.executeUpdate();
+            }
+
+            // Confirmar la transacción si todo se ejecutó correctamente
+            conn.commit();
+
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback(); // Revertir transacción en caso de error
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
+            throw e;
+
         }
     }
 

@@ -109,12 +109,13 @@ public class ReservasView {
 
         reserva.setHabitacion(habitacion);
 
+        scanner.nextLine();
         System.out.print("Ingrese el destino: \n");
-        String destino = scanner.next();
+        String destino = scanner.nextLine();
         reserva.setDestino(destino);
 
         System.out.print("Ingrese el origen: \n");
-        String origen = scanner.next();
+        String origen = scanner.nextLine();
         reserva.setOrigen(origen);
 
         PrecioHabitacion precioHabitacion = PreciosHabitacionesView.obtenerSeleccionPrecio();

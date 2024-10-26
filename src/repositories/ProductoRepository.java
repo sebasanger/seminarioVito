@@ -39,20 +39,34 @@ public class ProductoRepository extends AbstractGenericRepository<Producto, Inte
     }
 
     @Override
-    public void actualizar(Producto precioHabitacion) throws SQLException {
+    public void actualizar(Producto producto) throws SQLException {
+        actualizar(producto, null);
+    }
+
+    public void actualizar(Producto producto, Connection conn) throws SQLException {
         String sql = "UPDATE productos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, marcas_id = ?, categorias_id = ? WHERE id = ?";
+        boolean cerrarConexion = false; // Variable para manejar el cierre opcional de la conexión
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+        // Si no se proporciona una conexión, crea una nueva y marca para cierre
+        if (conn == null) {
+            conn = MySQLConnection.getConnection();
+            cerrarConexion = true;
+        }
 
-            stmt.setString(1, precioHabitacion.getNombre());
-            stmt.setString(2, precioHabitacion.getDescripcion());
-            stmt.setDouble(3, precioHabitacion.getPrecio());
-            stmt.setInt(4, precioHabitacion.getStock());
-            stmt.setInt(5, precioHabitacion.getMarca().getId());
-            stmt.setInt(6, precioHabitacion.getCategoria().getId());
-            stmt.setInt(7, precioHabitacion.getId());
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, producto.getNombre());
+            stmt.setString(2, producto.getDescripcion());
+            stmt.setDouble(3, producto.getPrecio());
+            stmt.setInt(4, producto.getStock());
+            stmt.setInt(5, producto.getMarca().getId());
+            stmt.setInt(6, producto.getCategoria().getId());
+            stmt.setInt(7, producto.getId());
             stmt.executeUpdate();
+        } finally {
+            // Cierra la conexión solo si fue creada internamente en este método
+            if (cerrarConexion && conn != null) {
+                conn.close();
+            }
         }
     }
 

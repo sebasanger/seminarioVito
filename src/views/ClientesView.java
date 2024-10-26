@@ -75,6 +75,7 @@ public class ClientesView {
 
             try {
                 clienteController.crear(cliente);
+                cliente = clienteController.obtenerPorDocumento(documento);
                 System.out.println("Huesped generado correctamente");
             } catch (SQLException e) {
                 System.out.println("Error al generar el huesped, intentelo nuevamente");
@@ -104,6 +105,7 @@ public class ClientesView {
     }
 
     private static void eliminarCliente() throws SQLException {
+        verClientes();
         System.out.print("Ingrese el documento del cliente a eliminar: ");
         String documento = scanner.next();
         Cliente cliente = clienteController.obtenerPorDocumento(documento);

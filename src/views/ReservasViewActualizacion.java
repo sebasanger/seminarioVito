@@ -112,15 +112,17 @@ public class ReservasViewActualizacion {
     }
 
     private void actualizarDestino() {
+        scanner.nextLine();
         System.out.print("Ingrese el nuevo destino: ");
-        String destino = scanner.next();
+        String destino = scanner.nextLine();
         this.reserva.setDestino(destino);
         System.out.println("Destino actualizado correctamente.");
     }
 
     private void actualizarOrigen() {
+        scanner.nextLine();
         System.out.print("Ingrese el nuevo origen: ");
-        String origen = scanner.next();
+        String origen = scanner.nextLine();
         this.reserva.setOrigen(origen);
         System.out.println("Origen actualizado correctamente.");
     }

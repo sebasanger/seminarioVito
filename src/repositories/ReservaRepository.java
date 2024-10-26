@@ -89,11 +89,19 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
     @Override
     public void actualizar(Reserva reserva) throws SQLException {
-        String sql = "UPDATE reservas SET checkIn = ?, checkOut = ?, fechaCreacion = ?, fechaInicio = ?, fechaFin = ?, origen = ? , destino = ?, precioDiario = ?, precioTotal = ?, pagadoTotal = ?, estado = ?, habitaciones_id = ?, precios_habitaciones_id = ? , usuarios_id = ? WHERE id = ?";
+        actualizar(reserva, null); // Llama al método sobrecargado con conexión opcional
+    }
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+    public void actualizar(Reserva reserva, Connection conn) throws SQLException {
+        String sql = "UPDATE reservas SET checkIn = ?, checkOut = ?, fechaCreacion = ?, fechaInicio = ?, fechaFin = ?, origen = ?, destino = ?, precioDiario = ?, precioTotal = ?, pagadoTotal = ?, estado = ?, habitaciones_id = ?, precios_habitaciones_id = ?, usuarios_id = ? WHERE id = ?";
+        boolean cerrarConexion = false;
 
+        if (conn == null) {
+            conn = MySQLConnection.getConnection();
+            cerrarConexion = true;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDate(1, DateUtils.transformDateUtilToSql(reserva.getCheckIn()));
             stmt.setDate(2, DateUtils.transformDateUtilToSql(reserva.getCheckOut()));
             stmt.setDate(3, DateUtils.transformDateUtilToSql(reserva.getFechaCreacion()));
@@ -113,7 +121,12 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             stmt.setInt(13, reserva.getPrecioHabitacion().getId());
             stmt.setInt(14, reserva.getUsuario().getId());
             stmt.setInt(15, reserva.getId());
+
             stmt.executeUpdate();
+        } finally {
+            if (cerrarConexion && conn != null) {
+                conn.close();
+            }
         }
     }
 

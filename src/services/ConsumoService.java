@@ -43,9 +43,6 @@ public class ConsumoService extends AbstractGenericService<Consumicion, Integer>
     }
 
     public void crearConsumo(Consumicion consumicion) throws SQLException, StockInsuficienteException {
-
-        // TODO: Agregar logica para agregar faltante de pago a la reserva
-
         Date fechaActual = new Date(new java.util.Date().getTime());
         consumicion.setFecha(fechaActual);
 
