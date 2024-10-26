@@ -3,7 +3,9 @@ import java.util.Scanner;
 
 import views.ClientesView;
 import views.ConsumosView;
+import views.HabitacionesView;
 import views.PagosView;
+import views.PreciosHabitacionesView;
 import views.ProductoView;
 import views.ReservasView;
 
@@ -29,6 +31,11 @@ public class App {
             System.out.println("3. Gestionar Pagos");
             System.out.println("4. Gestionar Consumiciones");
             System.out.println("5. Gestionar Productos");
+            System.out.println("6. Gestionar Habitaciones");
+            System.out.println("7. Gestionar Usuarios");
+            System.out.println("8. Gestionar Precios Habitaciones");
+            System.out.println("9. Gestionar Categorias de Productos");
+            System.out.println("10. Gestionar Marcas de Productos");
 
             System.out.println();
             System.out.print("Seleccione una opción: ");
@@ -52,6 +59,21 @@ public class App {
                     ConsumosView.mostrarMenuConsumos();
                     break;
                 case 5:
+                    ProductoView.mostrarMenuProductos();
+                    break;
+                case 6:
+                    HabitacionesView.mostrarMenuHabitaciones();
+                    break;
+                case 7:
+                    ProductoView.mostrarMenuProductos();
+                    break;
+                case 8:
+                    PreciosHabitacionesView.mostrarMenuPreciosHabitaciones();
+                    break;
+                case 9:
+                    ProductoView.mostrarMenuProductos();
+                    break;
+                case 10:
                     ProductoView.mostrarMenuProductos();
                     break;
                 default:

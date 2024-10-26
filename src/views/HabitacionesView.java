@@ -13,7 +13,7 @@ public class HabitacionesView {
     private static final Scanner scanner = new Scanner(System.in);
     private static HabitacionController habitacionController = new HabitacionController();
 
-    public static void mostrarMenuReservas() throws SQLException {
+    public static void mostrarMenuHabitaciones() throws SQLException {
         while (true) {
 
             System.out.println("===========================================");
