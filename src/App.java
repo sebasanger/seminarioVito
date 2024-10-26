@@ -1,9 +1,11 @@
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import views.CategoriasView;
 import views.ClientesView;
 import views.ConsumosView;
 import views.HabitacionesView;
+import views.MarcasView;
 import views.PagosView;
 import views.PreciosHabitacionesView;
 import views.ProductoView;
@@ -71,10 +73,10 @@ public class App {
                     PreciosHabitacionesView.mostrarMenuPreciosHabitaciones();
                     break;
                 case 9:
-                    ProductoView.mostrarMenuProductos();
+                    CategoriasView.mostrarMenuCategorias();
                     break;
                 case 10:
-                    ProductoView.mostrarMenuProductos();
+                    MarcasView.mostrarMenuMarcas();
                     break;
                 default:
                     System.out.println("Opción no válida, intenta de nuevo.");

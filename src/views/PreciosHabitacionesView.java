@@ -17,9 +17,9 @@ public class PreciosHabitacionesView {
     public static void mostrarMenuPreciosHabitaciones() throws SQLException {
         while (true) {
 
-            System.out.println("===========================================");
-            System.out.println("           GESTIÓN DE HABITACIONES             ");
-            System.out.println("===========================================");
+            System.out.println("==========================================================");
+            System.out.println("           GESTIÓN DE PRECIOS DE HABITACIONES             ");
+            System.out.println("==========================================================");
             System.out.println();
             System.out.println("1. Crear Precio");
             System.out.println("2. Ver Precios");
@@ -157,7 +157,7 @@ public class PreciosHabitacionesView {
             System.out.println(precio);
             System.out.println("Precio de habitacion actualizado correctamente.");
         } else {
-            System.out.println("Cliente no encontrado busque nuevamente.");
+            System.out.println("Precio no encontrado busque nuevamente.");
             actualizarPrecioHabitacion();
         }
     }
