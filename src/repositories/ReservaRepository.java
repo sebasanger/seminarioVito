@@ -19,6 +19,8 @@ import utils.DateUtils;
 
 public class ReservaRepository extends AbstractGenericRepository<Reserva, Integer> {
 
+    private HabitacionRepository habitacionRepository = new HabitacionRepository();
+
     @Override
     protected String getTabla() {
         return "reservas";
@@ -39,9 +41,14 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
     @Override
     public void crear(Reserva reserva) throws SQLException {
         String sql = "INSERT INTO reservas (checkIn, checkOut, fechaCreacion, fechaInicio, fechaFin, origen, destino, precioDiario, precioTotal, pagadoTotal, estado, habitaciones_id, precios_habitaciones_id, usuarios_id ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        Connection conn = null;
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try {
+
+            conn = MySQLConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 
             stmt.setDate(1, DateUtils.transformDateUtilToSql(reserva.getCheckIn()));
             stmt.setDate(2, DateUtils.transformDateUtilToSql(reserva.getCheckOut()));
@@ -53,8 +60,8 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             stmt.setString(7, reserva.getDestino());
 
             stmt.setDouble(8, reserva.getPrecioDiario() != null ? reserva.getPrecioDiario() : 0);
-            stmt.setDouble(9, reserva.getPagadoTotal() != null ? reserva.getPagadoTotal() : 0);
-            stmt.setDouble(10, reserva.getPrecioTotal() != null ? reserva.getPrecioTotal() : 0);
+            stmt.setDouble(9, reserva.getPrecioTotal() != null ? reserva.getPrecioTotal() : 0);
+            stmt.setDouble(10, reserva.getPagadoTotal() != null ? reserva.getPagadoTotal() : 0);
 
             stmt.setString(11, reserva.getEstado());
 
@@ -68,10 +75,37 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             if (generatedKeys.next()) {
                 int reservaId = generatedKeys.getInt(1);
 
-                insertarClientesReserva(conn, reserva.getClientes(), reservaId);
+                this.eliminarClientesReserva(conn, reservaId);// se elimina para actualizar los clientes de la reserva
+
+                // se vuelven a agregar los clientes a la reserva por si se cambiaron
+                this.insertarClientesReserva(conn, reserva.getClientes(), reservaId);
+
             } else {
                 throw new SQLException("Error al obtener el ID de la reserva insertada.");
             }
+
+            this.cambiarEstadoHabitacion(reserva.getHabitacion(), reserva.getEstado(), conn);
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback(); // Revertir transacción en caso de error
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
+            throw e;
+
+        }
+    }
+
+    private void eliminarClientesReserva(Connection conn, int reservaId) throws SQLException {
+        String sqlClientesReservas = "DELETE FROM reservas_clientes WHERE reservas_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sqlClientesReservas)) {
+            stmt.setInt(1, reservaId);
+            stmt.executeUpdate();
         }
     }
 
@@ -101,7 +135,10 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             cerrarConexion = true;
         }
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn.setAutoCommit(false);
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+
             stmt.setDate(1, DateUtils.transformDateUtilToSql(reserva.getCheckIn()));
             stmt.setDate(2, DateUtils.transformDateUtilToSql(reserva.getCheckOut()));
             stmt.setDate(3, DateUtils.transformDateUtilToSql(reserva.getFechaCreacion()));
@@ -123,7 +160,24 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             stmt.setInt(15, reserva.getId());
 
             stmt.executeUpdate();
+
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int reservaId = generatedKeys.getInt(1);
+                insertarClientesReserva(conn, reserva.getClientes(), reservaId);
+            } else {
+                throw new SQLException("Error al obtener el ID de la reserva insertada.");
+            }
+
+            this.cambiarEstadoHabitacion(reserva.getHabitacion(), reserva.getEstado(), conn);
+
+            conn.commit();
         } finally {
+            try {
+                conn.rollback(); // Revertir transacción en caso de error
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
             if (cerrarConexion && conn != null) {
                 conn.close();
             }
@@ -177,14 +231,45 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
     public void cambiarEstadoReserva(Integer reservaId, EstadoReservaEnum estado) throws SQLException {
         String sql = "UPDATE reservas SET  estado = ? WHERE id = ?";
+        Reserva reserva = obtenerPorId(reservaId);
+        Connection conn = null;
+        Habitacion habitacion = habitacionRepository.obtenerPorId(reserva.getHabitacion().getId());
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = MySQLConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            conn.setAutoCommit(false);
+
+            this.cambiarEstadoHabitacion(habitacion, estado.getEstado(), conn);
 
             stmt.setString(1, estado.getEstado());
             stmt.setInt(2, reservaId);
             stmt.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback(); // Revertir transacción en caso de error
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
+            throw e;
+
         }
+    }
+
+    private void cambiarEstadoHabitacion(Habitacion habitacion, String estado, Connection conn)
+            throws SQLException {
+        if (estado.equals(EstadoReservaEnum.ACTIVA.getEstado())) {
+            habitacion.setdisponible(false);
+        } else {
+            habitacion.setdisponible(true);
+        }
+
+        habitacionRepository.actualizar(habitacion, conn);
     }
 
 }

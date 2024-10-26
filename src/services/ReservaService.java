@@ -42,9 +42,6 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
             reserva.setEstado(EstadoReservaEnum.PENDIENTE.getEstado());
         }
 
-        System.out.println("Reserva creada con éxito.");
-        System.out.println(reserva);
-
         reservaRepository.crear(reserva);
     }
 

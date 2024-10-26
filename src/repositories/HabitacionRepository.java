@@ -46,10 +46,20 @@ public class HabitacionRepository extends AbstractGenericRepository<Habitacion, 
 
     @Override
     public void actualizar(Habitacion habitacion) throws SQLException {
-        String sql = "UPDATE habitaciones SET numeroHabitacion = ?, disponible = ?, habilitada = ?, piso = ? , camasSingles = ? , camasDobles = ? , capacidad = ?  WHERE id = ?";
+        actualizar(habitacion, null);
+    }
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+    public void actualizar(Habitacion habitacion, Connection conn) throws SQLException {
+        String sql = "UPDATE habitaciones SET numeroHabitacion = ?, disponible = ?, habilitada = ?, piso = ? , camasSingles = ? , camasDobles = ? , capacidad = ?  WHERE id = ?";
+        boolean cerrarConexion = false; // Variable para manejar el cierre opcional de la conexión
+
+        // Si no se proporciona una conexión, crea una nueva y marca para cierre
+        if (conn == null) {
+            conn = MySQLConnection.getConnection();
+            cerrarConexion = true;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, habitacion.getNumeroHabitacion());
             stmt.setBoolean(2, habitacion.getdisponible());
@@ -60,6 +70,11 @@ public class HabitacionRepository extends AbstractGenericRepository<Habitacion, 
             stmt.setInt(7, habitacion.getCapacidad());
             stmt.setInt(8, habitacion.getId());
             stmt.executeUpdate();
+        } finally {
+            // Cierra la conexión solo si fue creada internamente en este método
+            if (cerrarConexion && conn != null) {
+                conn.close();
+            }
         }
     }
 
