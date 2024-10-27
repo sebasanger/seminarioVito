@@ -12,6 +12,7 @@ public class UsuarioController extends AbstractGenericController<Usuario, Intege
         return usuarioService;
     }
 
+    // busca el usuario logueado actualmente
     public Usuario getUsuarioLogueado() {
         return UsuarioService.getUsuarioActual();
     }

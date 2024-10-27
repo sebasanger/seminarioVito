@@ -15,6 +15,7 @@ public class CajaController extends AbstractGenericController<Caja, Integer> {
         return cajaService;
     }
 
+    // busca la caja activa actualmente
     public Caja obtenerCajaActiva() throws SQLException, CajaNoAbiertaException {
         return this.cajaService.obtenerCajaActiva();
     }

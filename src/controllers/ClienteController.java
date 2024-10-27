@@ -14,6 +14,7 @@ public class ClienteController extends AbstractGenericController<Cliente, Intege
         return clienteService;
     }
 
+    ////busca el cliente por su documento
     public Cliente obtenerPorDocumento(String documento) throws SQLException {
         System.out.println(documento);
         return this.clienteService.obtenerPorDocumento(documento);
