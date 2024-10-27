@@ -18,7 +18,6 @@ import views.UsuarioView;
 public class App {
 
     private static final Scanner scanner = new Scanner(System.in);
-
     private static UsuarioService usuarioService = new UsuarioService();
 
     public static void main(String[] args) throws SQLException {
@@ -113,7 +112,7 @@ public class App {
                     EntradaProductosView.mostrarMenuEntradasProductos();
                     break;
                 default:
-                    System.out.println("Opción no válida, intenta de nuevo.");
+                    System.out.println("Opcion no valida, intenta de nuevo.");
             }
         }
     }
