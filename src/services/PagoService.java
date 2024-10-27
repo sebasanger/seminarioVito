@@ -16,7 +16,7 @@ import repositories.UsuarioRepository;
 
 public class PagoService extends AbstractGenericService<Pago, Integer> {
     private PagoRepository pagoRepository = new PagoRepository();
-    private ReservaService reservaService = new ReservaService();
+    private ReservaRepository reservaRepository = new ReservaRepository();
     private CajaService cajaService = new CajaService();
 
     @Override
@@ -49,20 +49,20 @@ public class PagoService extends AbstractGenericService<Pago, Integer> {
         Caja caja = cajaService.obtenerCajaActiva();
         pago.setCaja(caja);
 
-        Double faltantePorPagar = pago.getReserva().getPrecioTotal() - pago.getReserva().getPagadoTotal();
+        Reserva reservaPagada = reservaRepository.obtenerPorId(pago.getReserva().getId());
+        Double faltantePorPagar = reservaPagada.getPrecioTotal() - reservaPagada.getPagadoTotal();
 
         if (pago.getCantidad() > faltantePorPagar) {
             throw new PagoExcedidoException();
         }
 
         pagoRepository.crear(pago);
-        Reserva reservaPagada = reservaService.obtenerPorId(pago.getReserva().getId());
 
         Double nuevoTotalPagado = reservaPagada.getPagadoTotal() + pago.getCantidad();
 
         reservaPagada.setPagadoTotal(nuevoTotalPagado);
 
-        reservaService.actualizar(reservaPagada);
+        reservaRepository.cambiarMontos(pago.getReserva().getId(), reservaPagada.getPrecioTotal(), nuevoTotalPagado);
 
     }
 

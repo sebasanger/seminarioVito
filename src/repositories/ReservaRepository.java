@@ -52,7 +52,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
     @Override
     public Reserva obtenerPorId(Integer id) throws SQLException {
-        String sql = sqlGetAll + " WHERE id = ?";
+        String sql = sqlGetAll + " WHERE reservas.id = ?";
         Reserva entidad = null;
 
         try (Connection conn = MySQLConnection.getConnection();
@@ -287,6 +287,35 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
             stmt.setString(1, estado.getEstado());
             stmt.setInt(2, reservaId);
+            stmt.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback(); // Revertir transacción en caso de error
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
+            throw e;
+
+        }
+    }
+
+    public void cambiarMontos(Integer reservaId, Double totalPagar, Double totalPagado) throws SQLException {
+        String sql = "UPDATE reservas SET precioTotal = ?, pagadoTotal = ? WHERE id = ?";
+        Connection conn = null;
+
+        try {
+            conn = MySQLConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            conn.setAutoCommit(false);
+
+            stmt.setDouble(1, totalPagar);
+            stmt.setDouble(2, totalPagado);
+            stmt.setInt(3, reservaId);
             stmt.executeUpdate();
 
             conn.commit();
