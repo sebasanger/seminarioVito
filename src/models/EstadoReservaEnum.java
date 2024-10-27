@@ -1,5 +1,6 @@
 package models;
 
+//para poder trabajar los estados posibles de las reservas
 public enum EstadoReservaEnum {
     PENDIENTE("pendiente"),
     FINALIZADA("finalizada"),

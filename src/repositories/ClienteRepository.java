@@ -72,6 +72,7 @@ public class ClienteRepository extends AbstractGenericRepository<Cliente, Intege
         return entidades;
     }
 
+    // busca un cliente por su documento
     public Cliente obtenerPorDocumento(String documento) throws SQLException {
         String sql = "SELECT * FROM " + getTabla() + " WHERE documento = ?";
         Cliente entidad = null;

@@ -11,11 +11,13 @@ import models.Usuario;
 
 public class CajaRepository extends AbstractGenericRepository<Caja, Integer> {
 
+    // nombre de la tabla
     @Override
     protected String getTabla() {
         return "cajas";
     }
 
+    // mapea el result set a la entidad con la que estamos trabajando
     @Override
     protected Caja mapeoEntidad(ResultSet rs) throws SQLException {
         return new Caja(rs.getInt("id"), rs.getBoolean("activa"), rs.getDouble("montoApertura"),
@@ -23,6 +25,7 @@ public class CajaRepository extends AbstractGenericRepository<Caja, Integer> {
                 new Usuario(rs.getInt("usuarios_id")));
     }
 
+    // implementa el metodo para crear la entidad
     @Override
     public void crear(Caja caja) throws SQLException {
         String sql = "INSERT INTO cajas (activa, montoApertura, montoCierre, fechaApertura, fechaCierre, usuarios_id) VALUES (?,?,?,?,?,?)";
@@ -40,6 +43,7 @@ public class CajaRepository extends AbstractGenericRepository<Caja, Integer> {
         }
     }
 
+    // implementa el metodo para actualizar la entidad
     @Override
     public void actualizar(Caja caja) throws SQLException {
         String sql = "UPDATE cajas SET activa = ?, montoApertura = ?, montoCierre = ?, fechaApertura = ?, fechaCierre = ?, usuarios_id = ? WHERE id = ?";
@@ -58,6 +62,7 @@ public class CajaRepository extends AbstractGenericRepository<Caja, Integer> {
         }
     }
 
+    // busca alguna caja que tenga es estado de activa
     public Caja obtenerCajaActiva() throws SQLException {
         String sql = "SELECT * FROM " + getTabla() + " WHERE activa = 1";
         Caja caja = null;

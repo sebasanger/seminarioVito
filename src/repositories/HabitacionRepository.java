@@ -51,6 +51,7 @@ public class HabitacionRepository extends AbstractGenericRepository<Habitacion, 
         }
     }
 
+    // para sobresecribir el llamado normal y mandarlo como sin conexion previa
     @Override
     public void actualizar(Habitacion habitacion) throws SQLException {
         actualizar(habitacion, null);
@@ -58,9 +59,11 @@ public class HabitacionRepository extends AbstractGenericRepository<Habitacion, 
 
     public void actualizar(Habitacion habitacion, Connection conn) throws SQLException {
         String sql = "UPDATE habitaciones SET numeroHabitacion = ?, disponible = ?, habilitada = ?, piso = ? , camasSingles = ? , camasDobles = ? , capacidad = ?  WHERE id = ?";
-        boolean cerrarConexion = false; // Variable para manejar el cierre opcional de la conexión
+        // Variable para manejar el cierre opcional de la conexión por si se usa el
+        // metodo dentro de otra conexion
+        boolean cerrarConexion = false;
 
-        // Si no se proporciona una conexión, crea una nueva y marca para cierre
+        // Si no se proporciona una conexion, crea una nueva y marca para cierre
         if (conn == null) {
             conn = MySQLConnection.getConnection();
             cerrarConexion = true;
@@ -78,13 +81,17 @@ public class HabitacionRepository extends AbstractGenericRepository<Habitacion, 
             stmt.setInt(8, habitacion.getId());
             stmt.executeUpdate();
         } finally {
-            // Cierra la conexión solo si fue creada internamente en este método
+            // Cierra la conexion solo si fue creada internamente en este metodo
             if (cerrarConexion && conn != null) {
                 conn.close();
             }
         }
     }
 
+    // hace la busqueda de las habitaciones libres entre un rago de fechas
+    // para lo cual evalua las reservas que se tengan en esas fechas
+    // si en esa habitacion se tiene una reserva para la fecha no se la agrega en la
+    // lista
     public List<Habitacion> obtenerHabitacionesLibres(Date fechaInicio, Date fechaFin,
             Integer capacidad)
             throws SQLException {
@@ -113,7 +120,7 @@ public class HabitacionRepository extends AbstractGenericRepository<Habitacion, 
             stmt.setDate(4, fechaFin); // Segundo rango de fechaFin
             stmt.setDate(5, fechaInicio); // Fecha dentro de los rangos
             stmt.setDate(6, fechaFin); // Fecha dentro de los rangos
-            stmt.setInt(7, capacidad); // Capacidad mínima
+            stmt.setInt(7, capacidad); // Capacidad minima
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {

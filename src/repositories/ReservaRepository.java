@@ -18,23 +18,28 @@ import models.Reserva;
 import models.Usuario;
 import utils.DateUtils;
 
+//repositorio principal para el manejo de las reservas
+//implementa operaciones CRUD para la entidad reservas en la base de datos
 public class ReservaRepository extends AbstractGenericRepository<Reserva, Integer> {
 
     private HabitacionRepository habitacionRepository = new HabitacionRepository();
     private UsuarioRepository usuarioRepository = new UsuarioRepository();
     private PrecioHabitacionRepository precioHabitacionRepository = new PrecioHabitacionRepository();
 
+    // busca las reserva con todos sus datos relacionados
     private static final String sqlGetAll = "SELECT *\n" + //
             "FROM reservas\n" + //
             "INNER JOIN  habitaciones ON  habitaciones.id = reservas.habitaciones_id\n" + //
             "INNER JOIN  precios_habitaciones ON  precios_habitaciones.id = reservas.precios_habitaciones_id\n" + //
             "INNER JOIN  usuarios ON  usuarios.id = reservas.usuarios_id";
 
+    // retorna el nombre de la tabla
     @Override
     protected String getTabla() {
         return "reservas";
     }
 
+    // busca todas las reservas con sus datos relacionados
     @Override
     public List<Reserva> obtenerTodos() throws SQLException {
         List<Reserva> reservas = new ArrayList<>();
@@ -50,6 +55,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         return reservas;
     }
 
+    // busca una reserva con sus datos relacionados
     @Override
     public Reserva obtenerPorId(Integer id) throws SQLException {
         String sql = sqlGetAll + " WHERE reservas.id = ?";
@@ -69,6 +75,10 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         return entidad;
     }
 
+    // realiza el mapeo de la entidad
+    // utiliza el mapeo de las otras entiades para poder generar el objeto que se
+    // pasa en la generacion del objeto de la entidad reserva
+    // asi de manera optima se rellena la entidad con sus objetos referenciados
     @Override
     protected Reserva mapeoEntidad(ResultSet rs) throws SQLException {
         Habitacion habitacion = habitacionRepository.mapeoEntidad(rs, "habitaciones_id");
@@ -90,12 +100,14 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         Connection conn = null;
 
         try {
-
+            // Comienza la transacción
+            // desahilita que se ejecute automaticamente la transaccion
             conn = MySQLConnection.getConnection();
             conn.setAutoCommit(false);
-
+            // permite retornar el id geenerado
             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 
+            // se guardan los datos en la preparacion de la consulta
             stmt.setDate(1, DateUtils.transformDateUtilToSql(reserva.getCheckIn()));
             stmt.setDate(2, DateUtils.transformDateUtilToSql(reserva.getCheckOut()));
             stmt.setDate(3, DateUtils.transformDateUtilToSql(reserva.getFechaCreacion()));
@@ -117,21 +129,26 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
             stmt.executeUpdate();
 
+            // obtiene el id de la reserva
             ResultSet generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int reservaId = generatedKeys.getInt(1);
 
-                // se vuelven a agregar los clientes a la reserva por si se cambiaron
+                // se agregan los clientes a la reserva
                 this.insertarClientesReserva(conn, reserva.getClientes(), reservaId);
 
             } else {
                 throw new SQLException("Error al obtener el ID de la reserva insertada.");
             }
 
+            // cambia el estado de la habitacion dependiendo del estado actual y pasa la
+            // conexion actual
             this.cambiarEstadoHabitacion(reserva.getHabitacion(), reserva.getEstado(), conn);
 
             System.out.println("Reserva generada correctamente");
             System.out.println(reserva);
+
+            // se guardan todas las transacciones si es que todo salio bien
             conn.commit();
         } catch (SQLException e) {
             if (conn != null) {
@@ -146,6 +163,8 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         }
     }
 
+    // a futuro implementar eliminacion logica y no por eliminacion por base de
+    // datos
     private void eliminarClientesReserva(Connection conn, int reservaId) throws SQLException {
         String sqlClientesReservas = "DELETE FROM reservas_clientes WHERE reservas_id = ?";
 
@@ -155,6 +174,10 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         }
     }
 
+    // agrega a la tabla intermedia de la base de datos el id de cada cliente y el
+    // id de la reserva
+    // esto se hace por cada cliente asi se puede tener un listado de clientes en
+    // cada resereva
     private void insertarClientesReserva(Connection conn, List<Cliente> clientes, int reservaId) throws SQLException {
         String sqlClientesReservas = "INSERT INTO reservas_clientes (clientes_id, reservas_id) VALUES (?, ?)";
 
@@ -169,13 +192,16 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
     @Override
     public void actualizar(Reserva reserva) throws SQLException {
-        actualizar(reserva, null); // Llama al método sobrecargado con conexión opcional
+        // Llama al metodo sobrecargado con conexión opcional
+        actualizar(reserva, null);
     }
 
     public void actualizar(Reserva reserva, Connection conn) throws SQLException {
         String sql = "UPDATE reservas SET checkIn = ?, checkOut = ?, fechaCreacion = ?, fechaInicio = ?, fechaFin = ?, origen = ?, destino = ?, precioDiario = ?, precioTotal = ?, pagadoTotal = ?, estado = ?, habitaciones_id = ?, precios_habitaciones_id = ?, usuarios_id = ? WHERE id = ?";
+        // Variable para manejar el cierre opcional de la conexión
         boolean cerrarConexion = false;
 
+        // Si no se proporciona una conexión, crea una nueva y marca para cierre
         if (conn == null) {
             conn = MySQLConnection.getConnection();
             cerrarConexion = true;
@@ -207,25 +233,31 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
 
             stmt.executeUpdate();
 
-            this.eliminarClientesReserva(conn, reserva.getId());// se elimina para actualizar los clientes de la reserva
+            // se elimina los clientes para agregarlos nuevamente a la reserva
+            this.eliminarClientesReserva(conn, reserva.getId());
 
+            // agrega nuevamente los clientes a la reserva
             insertarClientesReserva(conn, reserva.getClientes(), reserva.getId());
 
+            // cambia el estado de la habitacion
             this.cambiarEstadoHabitacion(reserva.getHabitacion(), reserva.getEstado(), conn);
 
-            conn.commit();
+            conn.commit(); // se guardan todas las transacciones si es que todo salio bien
         } finally {
             try {
                 conn.rollback(); // Revertir transacción en caso de error
             } catch (SQLException rollbackEx) {
                 rollbackEx.printStackTrace();
             }
+
+            // Cierra la conexión solo si fue creada internamente en este método
             if (cerrarConexion && conn != null) {
                 conn.close();
             }
         }
     }
 
+    // busca todas las reservas por estado
     public List<Reserva> obtenerReservasPorEstado(String status) throws SQLException {
         String sql = sqlGetAll + " WHERE estado = ?";
         List<Reserva> reservas = new ArrayList<>();
@@ -245,6 +277,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         return reservas;
     }
 
+    // busca las reservas por un estado y una fecha de inicio o fin
     public List<Reserva> obtenerReservasPorEstadoYFecha(String status, Date fechaActual, Boolean porFechaFin)
             throws SQLException {
         String sql = "";
@@ -271,6 +304,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         return reservas;
     }
 
+    // actualiza el estado de la reserva
     public void cambiarEstadoReserva(Integer reservaId, EstadoReservaEnum estado) throws SQLException {
         String sql = "UPDATE reservas SET  estado = ? WHERE id = ?";
         Reserva reserva = obtenerPorId(reservaId);
@@ -303,10 +337,13 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         }
     }
 
+    // para poder ser llamado de manera sin una conexion previa la actualizacion de
+    // montos
     public void cambiarMontos(Integer reservaId, Double totalPagar, Double totalPagado) throws SQLException {
         cambiarMontos(reservaId, totalPagar, totalPagado, null);
     }
 
+    // actualiza los motos de total a pagar y total pagado de una reserva
     public void cambiarMontos(Integer reservaId, Double totalPagar, Double totalPagado, Connection conn)
             throws SQLException {
         String sql = "UPDATE reservas SET precioTotal = ?, pagadoTotal = ? WHERE id = ?";
@@ -337,6 +374,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
         }
     }
 
+    // cambia el estado de la habitacion que se esta utilizando
     private void cambiarEstadoHabitacion(Habitacion habitacion, String estado, Connection conn)
             throws SQLException {
         if (estado.equals(EstadoReservaEnum.ACTIVA.getEstado())) {

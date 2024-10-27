@@ -29,8 +29,11 @@ public class EntradaProductosRepository extends AbstractGenericRepository<Entrad
         String sql = "INSERT INTO entradas_productos (precioUnitario, cantidad, fecha, productos_id, usuarios_id) VALUES (?,?,?,?,?)";
         Connection conn = null;
         try {
+
+            // Comienza la transacción
+            // desahilita que se ejecute automaticamente la transaccion
             conn = MySQLConnection.getConnection();
-            conn.setAutoCommit(false); // Comienza la transacción
+            conn.setAutoCommit(false);
 
             // Actualizar stock del producto
             Producto producto = entradaProducto.getProducto();
@@ -46,6 +49,7 @@ public class EntradaProductosRepository extends AbstractGenericRepository<Entrad
             stmt.setInt(5, entradaProducto.getUsuario().getId());
             stmt.executeUpdate();
 
+            // se ejecuta si todo sale bien
             conn.commit();
         } catch (SQLException e) {
             if (conn != null) {
@@ -65,11 +69,15 @@ public class EntradaProductosRepository extends AbstractGenericRepository<Entrad
         String sql = "DELETE FROM " + getTabla() + " WHERE id = ?";
         Connection conn = null;
 
+        // busca los datos de la entrada de producto y el prducto en cuestion
         EntradaProducto entradaProducto = obtenerPorId(id);
         Producto producto = productoRepository.obtenerPorId(entradaProducto.getProducto().getId());
 
         if (entradaProducto != null && producto != null) {
             try {
+
+                // Comienza la transacción
+                // desahilita que se ejecute automaticamente la transaccion
                 conn = MySQLConnection.getConnection();
                 conn.setAutoCommit(false); // Comienza la transacción
 
@@ -80,8 +88,10 @@ public class EntradaProductosRepository extends AbstractGenericRepository<Entrad
                 PreparedStatement stmt = conn.prepareStatement(sql);
 
                 stmt.setObject(1, id);
+
                 stmt.executeUpdate();
-                conn.commit();
+
+                conn.commit();// guarda si todo sale bien
 
             } catch (SQLException e) {
                 if (conn != null) {

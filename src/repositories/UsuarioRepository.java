@@ -64,6 +64,7 @@ public class UsuarioRepository extends AbstractGenericRepository<Usuario, Intege
         }
     }
 
+    // busca el usuario por su email para realizar el login
     public Usuario obtenerPorEmail(String email) throws SQLException {
         String sql = "SELECT * FROM " + getTabla() + " WHERE email = ?";
         Usuario entidad = null;

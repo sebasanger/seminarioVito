@@ -22,6 +22,9 @@ public class PrecioHabitacionRepository extends AbstractGenericRepository<Precio
     }
 
     protected PrecioHabitacion mapeoEntidad(ResultSet rs, String idName) throws SQLException {
+        // se le pasa un id o usa el id predeterminado de la entidad
+        // para poder ser utilizado la generacion de la entidad precio por el
+        // repositorio de reservas
         String id = "id";
         if (idName == null) {
             id = idName;

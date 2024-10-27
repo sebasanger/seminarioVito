@@ -3,19 +3,24 @@ package repositories;
 import java.sql.SQLException;
 import java.util.List;
 
+//Interfaz generica que define los métodos básicos para operaciones CRUD
+//<T>  Tipo de la entidad.
+//<ID> Tipo del id de la entidad.
 public interface GenericRepository<T, ID> {
-    // Crear
+
+    // Crea una nueva entidad en la base de datos
     void crear(T entidad) throws SQLException;
 
-    // Leer por ID
+    // Obtiene una entidad de la base de datos por su id
     T obtenerPorId(ID id) throws SQLException;
 
-    // Leer todos
+    // Obtiene todas las entidades de la base de datos
     List<T> obtenerTodos() throws SQLException;
 
-    // Actualizar
+    // Actualiza una entidad existente en la base de datos
     void actualizar(T entidad) throws SQLException;
 
-    // Eliminar
+    // Elimina una entidad de la base de datos dado su id
     void eliminar(ID id) throws SQLException;
+
 }

@@ -53,7 +53,9 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
 
         try {
             conn = MySQLConnection.getConnection();
-            conn.setAutoCommit(false); // Comienza la transacción
+            // Comienza la transacción
+            // desahilita que se ejecute automaticamente la transaccion
+            conn.setAutoCommit(false);
 
             // Actualizar stock del producto
             Producto producto = consumicion.getProducto();
@@ -62,9 +64,7 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
 
             // Actualizar precio total de la reserva
             Reserva reserva = consumicion.getReserva();
-
             Double totalAPagar = reserva.getPrecioTotal() + consumicion.getPrecioTotal();
-
             reservaRepository.cambiarMontos(reserva.getId(), totalAPagar, reserva.getPagadoTotal(), conn);
 
             // Crear la consumición
@@ -79,7 +79,7 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
                 stmt.executeUpdate();
             }
 
-            // Confirmar la transacción si todo se ejecutó correctamente
+            // Confirmar la transacción si todo se ejecuto correctamente
             conn.commit();
 
         } catch (SQLException e) {
@@ -96,25 +96,9 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
         }
     }
 
-    @Override
-    public void actualizar(Consumicion consumicion) throws SQLException {
-        String sql = "UPDATE consumiciones SET cantidad = ?, precioTotal = ?, precioUnitario = ?, fecha = ?, reservas_id = ?, productos_id = ? , usuarios_id = ? WHERE id = ?";
+    // TODO: implementar eliminacion con reestock y guardado de precios en reserva
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, consumicion.getCantidad());
-            stmt.setDouble(2, consumicion.getPrecioTotal());
-            stmt.setDouble(3, consumicion.getPrecioUnitario());
-            stmt.setDate(4, new java.sql.Date(consumicion.getFecha().getTime()));
-            stmt.setInt(5, consumicion.getReserva().getId());
-            stmt.setInt(6, consumicion.getProducto().getId());
-            stmt.setInt(7, consumicion.getUsuario().getId());
-            stmt.setInt(8, consumicion.getId());
-            stmt.executeUpdate();
-        }
-    }
-
+    // obitene un monto de las consumicones realizadas por una reserva
     public Double obtenerTotalConsumcionesPorReserva(Integer reservaId) throws SQLException {
         String sql = "SELECT * FROM " + getTabla() + " WHERE reservas_id = ?";
         Double total = 0D;
@@ -135,6 +119,7 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
         return total;
     }
 
+    // obtiene el listado de las consumiciones de una reserva
     public List<Consumicion> obtenerConsumosReserva(Integer reservaId) throws SQLException {
         String sql = "SELECT * FROM consumiciones WHERE reservas_id = ?";
         List<Consumicion> consumiciones = new ArrayList<>();
