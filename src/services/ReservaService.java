@@ -8,6 +8,7 @@ import java.util.List;
 import exceptions.PagoFaltanteException;
 import models.EstadoReservaEnum;
 import models.Reserva;
+import repositories.ClienteRepository;
 import repositories.ConsumicionRepository;
 import repositories.ReservaRepository;
 import utils.DateUtils;
@@ -16,6 +17,7 @@ import utils.DateUtils;
 public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     private ReservaRepository reservaRepository = new ReservaRepository();
     private ConsumicionRepository consumicionRepository = new ConsumicionRepository();
+    private ClienteRepository clienteRepository = new ClienteRepository();
 
     // obtiene el repositorio para trabajar con la entidad
     @Override
@@ -78,13 +80,19 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     @Override
     // busca todas las reservas
     public List<Reserva> obtenerTodos() throws SQLException {
-        return this.reservaRepository.obtenerTodos();
+        List<Reserva> reservas = this.reservaRepository.obtenerTodos();
+        for (Reserva reserva : reservas) {
+            reserva.setClientes(clienteRepository.obtenerClientesReserva(reserva.getId()));
+        }
+        return reservas;
     }
 
     @Override
     // busca la reserva por un id
     public Reserva obtenerPorId(Integer id) throws SQLException {
-        return reservaRepository.obtenerPorId(id);
+        Reserva reserva = reservaRepository.obtenerPorId(id);
+        reserva.setClientes(clienteRepository.obtenerClientesReserva(id));
+        return reserva;
     }
 
     // busca todas las reservas por un estado
