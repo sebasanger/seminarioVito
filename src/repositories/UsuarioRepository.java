@@ -23,7 +23,7 @@ public class UsuarioRepository extends AbstractGenericRepository<Usuario, Intege
 
     protected Usuario mapeoEntidad(ResultSet rs, String idName) throws SQLException {
         String id = "id";
-        if (idName == null) {
+        if (idName != null) {
             id = idName;
         }
 

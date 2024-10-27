@@ -26,7 +26,7 @@ public class PrecioHabitacionRepository extends AbstractGenericRepository<Precio
         // para poder ser utilizado la generacion de la entidad precio por el
         // repositorio de reservas
         String id = "id";
-        if (idName == null) {
+        if (idName != null) {
             id = idName;
         }
         return new PrecioHabitacion(rs.getInt(id), rs.getDouble("precio"), rs.getString("descripcion"),

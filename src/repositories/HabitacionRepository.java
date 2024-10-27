@@ -25,7 +25,7 @@ public class HabitacionRepository extends AbstractGenericRepository<Habitacion, 
 
     protected Habitacion mapeoEntidad(ResultSet rs, String idName) throws SQLException {
         String id = "id";
-        if (idName == null) {
+        if (idName != null) {
             id = idName;
         }
         return new Habitacion(rs.getInt(id), rs.getString("numeroHabitacion"), rs.getBoolean("disponible"),
