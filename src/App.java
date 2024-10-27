@@ -4,6 +4,7 @@ import java.util.Scanner;
 import views.CategoriasView;
 import views.ClientesView;
 import views.ConsumosView;
+import views.EntradaProductosView;
 import views.HabitacionesView;
 import views.MarcasView;
 import views.PagosView;
@@ -38,6 +39,7 @@ public class App {
             System.out.println("8. Gestionar Precios Habitaciones");
             System.out.println("9. Gestionar Categorias de Productos");
             System.out.println("10. Gestionar Marcas de Productos");
+            System.out.println("11. Gestionar Entradas de Productos");
 
             System.out.println();
             System.out.print("Seleccione una opción: ");
@@ -77,6 +79,9 @@ public class App {
                     break;
                 case 10:
                     MarcasView.mostrarMenuMarcas();
+                    break;
+                case 11:
+                    EntradaProductosView.mostrarMenuEntradasProductos();
                     break;
                 default:
                     System.out.println("Opción no válida, intenta de nuevo.");

@@ -7,12 +7,15 @@ import java.sql.SQLException;
 
 import database.MySQLConnection;
 import models.EntradaProducto;
+import models.Producto;
 
 public class EntradaProductosRepository extends AbstractGenericRepository<EntradaProducto, Integer> {
 
+    private ProductoRepository productoRepository = new ProductoRepository();
+
     @Override
     protected String getTabla() {
-        return "entradasProductos";
+        return "entradas_productos";
     }
 
     @Override
@@ -23,10 +26,18 @@ public class EntradaProductosRepository extends AbstractGenericRepository<Entrad
 
     @Override
     public void crear(EntradaProducto entradaProducto) throws SQLException {
-        String sql = "INSERT INTO entradasProductos (precioUnitario, cantidad, fecha, productos_id, usuarios_id) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO entradas_productos (precioUnitario, cantidad, fecha, productos_id, usuarios_id) VALUES (?,?,?,?,?)";
+        Connection conn = null;
+        try {
+            conn = MySQLConnection.getConnection();
+            conn.setAutoCommit(false); // Comienza la transacción
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Actualizar stock del producto
+            Producto producto = entradaProducto.getProducto();
+            producto.setStock(producto.getStock() + entradaProducto.getCantidad());
+            productoRepository.actualizar(producto, conn);
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setDouble(1, entradaProducto.getPrecioUnitario());
             stmt.setInt(2, entradaProducto.getCantidad());
@@ -34,24 +45,59 @@ public class EntradaProductosRepository extends AbstractGenericRepository<Entrad
             stmt.setInt(4, entradaProducto.getProducto().getId());
             stmt.setInt(5, entradaProducto.getUsuario().getId());
             stmt.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback(); // Revertir transacción en caso de error
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
+            throw e;
+
         }
     }
 
     @Override
-    public void actualizar(EntradaProducto entradaProducto) throws SQLException {
-        String sql = "UPDATE entradasProductos SET precioUnitario = ?, cantidad = ?, fecha = ?, productos_id = ?, usuarios_id = ? WHERE id = ?";
+    public void eliminar(Integer id) throws SQLException {
+        String sql = "DELETE FROM " + getTabla() + " WHERE id = ?";
+        Connection conn = null;
 
-        try (Connection conn = MySQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+        EntradaProducto entradaProducto = obtenerPorId(id);
+        Producto producto = productoRepository.obtenerPorId(entradaProducto.getProducto().getId());
 
-            stmt.setDouble(1, entradaProducto.getPrecioUnitario());
-            stmt.setInt(2, entradaProducto.getCantidad());
-            stmt.setDate(3, new java.sql.Date(entradaProducto.getFecha().getTime()));
-            stmt.setInt(4, entradaProducto.getProducto().getId());
-            stmt.setInt(5, entradaProducto.getUsuario().getId());
-            stmt.setInt(6, entradaProducto.getId());
-            stmt.executeUpdate();
+        if (entradaProducto != null && producto != null) {
+            try {
+                conn = MySQLConnection.getConnection();
+                conn.setAutoCommit(false); // Comienza la transacción
+
+                // Actualizar stock del producto
+                producto.setStock(producto.getStock() - entradaProducto.getCantidad());
+                productoRepository.actualizar(producto, conn);
+
+                PreparedStatement stmt = conn.prepareStatement(sql);
+
+                stmt.setObject(1, id);
+                stmt.executeUpdate();
+                conn.commit();
+
+            } catch (SQLException e) {
+                if (conn != null) {
+                    try {
+                        conn.rollback(); // Revertir transacción en caso de error
+                    } catch (SQLException rollbackEx) {
+                        rollbackEx.printStackTrace();
+                    }
+                }
+                throw e;
+
+            }
+        } else {
+            System.out.println("No se encontro el producto o la entrada de producto que se queria eliminar...");
         }
+
     }
 
 }

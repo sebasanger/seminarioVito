@@ -28,8 +28,8 @@ public class EntradaProducto {
         this.precioUnitario = precioUnitario;
         this.cantidad = cantidad;
         this.fecha = fecha;
-        // this.producto = producto;
-        // this.usuario = usuario;
+        this.producto = new Producto(productoId);
+        this.usuario = new Usuario(usuarioId);
     }
 
     public EntradaProducto(Integer id, Double precioUnitario, Integer cantidad, Date fecha, Producto producto,
