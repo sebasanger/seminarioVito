@@ -6,12 +6,12 @@ import java.util.Scanner;
 import controllers.ConsumoController;
 import controllers.ProductoController;
 import controllers.ReservaController;
+import controllers.UsuarioController;
 import exceptions.StockInsuficienteException;
 import models.Consumicion;
 import models.EstadoReservaEnum;
 import models.Producto;
 import models.Reserva;
-import models.Usuario;
 
 public class ConsumosView {
 
@@ -19,6 +19,7 @@ public class ConsumosView {
     private static ConsumoController consumoController = new ConsumoController();
     private static ProductoController productoController = new ProductoController();
     private static ReservaController reservaController = new ReservaController();
+    private static UsuarioController usuarioController = new UsuarioController();
 
     public static void mostrarMenuConsumos() throws SQLException {
         while (true) {
@@ -75,8 +76,7 @@ public class ConsumosView {
             consumicion.setReserva(reserva);
             consumicion.setProducto(producto);
 
-            // TODO: Setear usuario cuando se tenga el login
-            consumicion.setUsuario(new Usuario(1));
+            consumicion.setUsuario(usuarioController.getUsuarioLogueado());
             try {
                 consumoController.crearConsumo(consumicion);
                 System.out.println("Consumo generado correctamente");

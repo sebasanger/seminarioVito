@@ -8,18 +8,19 @@ import java.util.List;
 import java.util.Scanner;
 
 import controllers.ReservaController;
+import controllers.UsuarioController;
 import models.Cliente;
 import models.EstadoReservaEnum;
 import models.Habitacion;
 import models.PrecioHabitacion;
 import models.Reserva;
-import models.Usuario;
 import utils.DateUtils;
 
 public class ReservasView {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static ReservaController reservaController = new ReservaController();
+    private static UsuarioController usuarioController = new UsuarioController();
     private static ReservasViewActualizacion reservasViewActualizacion = new ReservasViewActualizacion();
 
     public static void mostrarMenuReservas() throws SQLException {
@@ -121,8 +122,7 @@ public class ReservasView {
         PrecioHabitacion precioHabitacion = PreciosHabitacionesView.obtenerSeleccionPrecio();
         reserva.setPrecioHabitacion(precioHabitacion);
 
-        // TODO: faltante de agregar el usuario cuando se tenga el login
-        reserva.setUsuario(new Usuario(1));
+        reserva.setUsuario(usuarioController.getUsuarioLogueado());
 
         reservaController.crear(reserva);
     }

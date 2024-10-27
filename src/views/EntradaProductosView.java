@@ -5,14 +5,15 @@ import java.util.Scanner;
 
 import controllers.EntradaProductoController;
 import controllers.ProductoController;
+import controllers.UsuarioController;
 import models.EntradaProducto;
 import models.Producto;
-import models.Usuario;
 
 public class EntradaProductosView {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static EntradaProductoController entradaProductoController = new EntradaProductoController();
+    private static UsuarioController usuarioController = new UsuarioController();
     private static ProductoController productoController = new ProductoController();
 
     public static void mostrarMenuEntradasProductos() throws SQLException {
@@ -67,8 +68,7 @@ public class EntradaProductosView {
             Double precioUnitario = scanner.nextDouble();
             entradaProducto.setPrecioUnitario(precioUnitario);
 
-            // TODO: Setear usuario cuando se tenga
-            entradaProducto.setUsuario(new Usuario(1));
+            entradaProducto.setUsuario(usuarioController.getUsuarioLogueado());
 
             try {
                 entradaProductoController.crear(entradaProducto);

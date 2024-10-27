@@ -5,18 +5,19 @@ import java.util.Scanner;
 
 import controllers.PagoController;
 import controllers.ReservaController;
+import controllers.UsuarioController;
 import exceptions.CajaNoAbiertaException;
 import exceptions.PagoExcedidoException;
 import models.EstadoReservaEnum;
 import models.Pago;
 import models.Reserva;
-import models.Usuario;
 
 public class PagosView {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static PagoController pagoController = new PagoController();
     private static ReservaController reservaController = new ReservaController();
+    private static UsuarioController usuarioController = new UsuarioController();
 
     public static void mostrarMenuPagos() throws SQLException {
         while (true) {
@@ -83,9 +84,7 @@ public class PagosView {
 
         System.out.print("Ingrese la descripcion :");
         String descripcion = scanner.nextLine();
-
-        // TODO: Setear usuario logeado
-        pago.setUsuario(new Usuario(1));
+        pago.setUsuario(usuarioController.getUsuarioLogueado());
 
         pago.setCantidad(monto);
         pago.setDescripcion(descripcion);

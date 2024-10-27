@@ -21,8 +21,8 @@ public class App {
     private static UsuarioService usuarioService = new UsuarioService();
 
     public static void main(String[] args) throws SQLException {
-        mostrarMenuPrincipal();
-        // ejecutarLogin();
+        // mostrarMenuPrincipal();
+        ejecutarLogin();
     }
 
     public static void ejecutarLogin() {

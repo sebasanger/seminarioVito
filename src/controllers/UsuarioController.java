@@ -12,4 +12,8 @@ public class UsuarioController extends AbstractGenericController<Usuario, Intege
         return usuarioService;
     }
 
+    public Usuario getUsuarioLogueado() {
+        return UsuarioService.getUsuarioActual();
+    }
+
 }
