@@ -304,8 +304,18 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
     }
 
     public void cambiarMontos(Integer reservaId, Double totalPagar, Double totalPagado) throws SQLException {
+        cambiarMontos(reservaId, totalPagar, totalPagado, null);
+    }
+
+    public void cambiarMontos(Integer reservaId, Double totalPagar, Double totalPagado, Connection conn)
+            throws SQLException {
         String sql = "UPDATE reservas SET precioTotal = ?, pagadoTotal = ? WHERE id = ?";
-        Connection conn = null;
+        boolean cerrarConexion = false;
+
+        if (conn == null) {
+            conn = MySQLConnection.getConnection();
+            cerrarConexion = true;
+        }
 
         try {
             conn = MySQLConnection.getConnection();
@@ -319,16 +329,11 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             stmt.executeUpdate();
 
             conn.commit();
-        } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback(); // Revertir transacción en caso de error
-                } catch (SQLException rollbackEx) {
-                    rollbackEx.printStackTrace();
-                }
+        } finally {
+            // Cierra la conexión solo si fue creada internamente en este método
+            if (cerrarConexion && conn != null) {
+                conn.close();
             }
-            throw e;
-
         }
     }
 

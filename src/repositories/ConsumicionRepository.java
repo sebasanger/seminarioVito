@@ -62,8 +62,10 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
 
             // Actualizar precio total de la reserva
             Reserva reserva = consumicion.getReserva();
-            reserva.setPrecioTotal(reserva.getPrecioTotal() + consumicion.getPrecioTotal());
-            reservaRepository.actualizar(reserva, conn);
+
+            Double totalAPagar = reserva.getPrecioTotal() + consumicion.getPrecioTotal();
+
+            reservaRepository.cambiarMontos(reserva.getId(), totalAPagar, reserva.getPagadoTotal(), conn);
 
             // Crear la consumición
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -81,6 +83,7 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
             conn.commit();
 
         } catch (SQLException e) {
+            System.err.println(e);
             if (conn != null) {
                 try {
                     conn.rollback(); // Revertir transacción en caso de error
