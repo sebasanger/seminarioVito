@@ -54,4 +54,22 @@ public class UsuarioRepository extends AbstractGenericRepository<Usuario, Intege
         }
     }
 
+    public Usuario obtenerPorEmail(String email) throws SQLException {
+        String sql = "SELECT * FROM " + getTabla() + " WHERE email = ?";
+        Usuario entidad = null;
+
+        try (Connection conn = MySQLConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setObject(1, email);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    entidad = mapeoEntidad(rs);
+                }
+            }
+        }
+        return entidad;
+    }
+
 }

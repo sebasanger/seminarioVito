@@ -1,6 +1,8 @@
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import exceptions.CredencialesInvalidasException;
+import services.UsuarioService;
 import views.CategoriasView;
 import views.ClientesView;
 import views.ConsumosView;
@@ -11,18 +13,45 @@ import views.PagosView;
 import views.PreciosHabitacionesView;
 import views.ProductoView;
 import views.ReservasView;
+import views.UsuarioView;
 
 public class App {
 
     private static final Scanner scanner = new Scanner(System.in);
 
+    private static UsuarioService usuarioService = new UsuarioService();
+
     public static void main(String[] args) throws SQLException {
-        mostrarMenuPrincipal();
+        // mostrarMenuPrincipal();
+        ejecutarLogin();
+    }
+
+    public static void ejecutarLogin() {
+        System.out.print("Ingrese su email: ");
+        String email = scanner.nextLine();
+
+        System.out.print("Ingrese su contraseña: ");
+        String password = scanner.nextLine();
+
+        try {
+            usuarioService.loginUsuario(email, password);
+            mostrarMenuPrincipal();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("Intentelo nuevamente");
+            ejecutarLogin();
+        } catch (CredencialesInvalidasException e) {
+            System.out.println("Intentelo nuevamente");
+            ejecutarLogin();
+        }
     }
 
     private static void mostrarMenuPrincipal() throws SQLException {
         while (true) {
             limpiarConsola();
+
+            System.out.println("Bienvenido, " + UsuarioService.getUsuarioActual().getNombre() + " "
+                    + UsuarioService.getUsuarioActual().getApellido());
 
             System.out.println("===========================================");
             System.out.println("           SISTEMA DE GESTIÓN HOTELERA     ");
@@ -69,7 +98,7 @@ public class App {
                     HabitacionesView.mostrarMenuHabitaciones();
                     break;
                 case 7:
-                    ProductoView.mostrarMenuProductos();
+                    UsuarioView.mostrarMenuUsuarios();
                     break;
                 case 8:
                     PreciosHabitacionesView.mostrarMenuPreciosHabitaciones();
