@@ -27,10 +27,12 @@ public class App {
         // email: admin
         // password: admin
         System.out.println("Login: email: admin, password: admin");
-        ejecutarLogin();
+
+        ejecutarLogin();// inicia la app con la solicitud del login
     }
 
     public static void ejecutarLogin() {
+        // pide el mail y password para hacer login
         System.out.print("Ingrese su email: ");
         String email = scanner.nextLine();
 
@@ -39,7 +41,9 @@ public class App {
 
         try {
             usuarioService.loginUsuario(email, password);
-            mostrarMenuPrincipal();
+            mostrarMenuPrincipal(); // si esta correcto el login se redirige al menu principal
+
+            // si esta mal se le inica al usuario y se pide login nuevamente
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
             System.out.println("Intentelo nuevamente");
@@ -50,6 +54,8 @@ public class App {
         }
     }
 
+    // muestra las opciones de las distintas vistas para realizar su CRUD o metodos
+    // especificos
     private static void mostrarMenuPrincipal() throws SQLException {
         while (true) {
             limpiarConsola();
@@ -124,7 +130,7 @@ public class App {
     }
 
     private static void limpiarConsola() {
-        // Este método funciona dependiendo del terminal. Simula limpiar la consola.
+        // limipa la consola
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
