@@ -8,20 +8,12 @@ import java.util.List;
 import exceptions.PagoFaltanteException;
 import models.EstadoReservaEnum;
 import models.Reserva;
-import repositories.ClienteRepository;
 import repositories.ConsumicionRepository;
-import repositories.HabitacionRepository;
-import repositories.PrecioHabitacionRepository;
 import repositories.ReservaRepository;
-import repositories.UsuarioRepository;
 import utils.DateUtils;
 
 public class ReservaService extends AbstractGenericService<Reserva, Integer> {
     private ReservaRepository reservaRepository = new ReservaRepository();
-    private PrecioHabitacionRepository precioHabitacionRepository = new PrecioHabitacionRepository();
-    private UsuarioRepository usuarioRepository = new UsuarioRepository();
-    private HabitacionRepository habitacionRepository = new HabitacionRepository();
-    private ClienteRepository clienteRepository = new ClienteRepository();
     private ConsumicionRepository consumicionRepository = new ConsumicionRepository();
 
     @Override
@@ -74,18 +66,16 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
 
     @Override
     public List<Reserva> obtenerTodos() throws SQLException {
-        return this.obtenerDatosRelacionadosListaReserva(this.reservaRepository.obtenerTodos());
+        return this.reservaRepository.obtenerTodos();
     }
 
     @Override
     public Reserva obtenerPorId(Integer id) throws SQLException {
-        Reserva reserva = reservaRepository.obtenerPorId(id);
-
-        return this.obtenerDatosRelacionadosReserva(reserva);
+        return reservaRepository.obtenerPorId(id);
     }
 
     public List<Reserva> obtenerReservasPorEstado(String status) throws SQLException {
-        return this.obtenerDatosRelacionadosListaReserva(this.reservaRepository.obtenerReservasPorEstado(status));
+        return this.reservaRepository.obtenerReservasPorEstado(status);
     }
 
     public List<Reserva> obtenerReservasPorEstadoYFecha(String status, Boolean porFechaFin)
@@ -93,8 +83,7 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
 
         LocalDate fechaActual = LocalDate.now();
 
-        return this.obtenerDatosRelacionadosListaReserva(
-                this.reservaRepository.obtenerReservasPorEstadoYFecha(status, Date.valueOf(fechaActual), porFechaFin));
+        return this.reservaRepository.obtenerReservasPorEstadoYFecha(status, Date.valueOf(fechaActual), porFechaFin);
     }
 
     private Double getPrecioTotal(java.util.Date fechaInicio, java.util.Date fechaFin, Double precioDiario,
@@ -105,22 +94,6 @@ public class ReservaService extends AbstractGenericService<Reserva, Integer> {
         }
         Long cantidadDias = DateUtils.getDiffInDays(fechaInicio, fechaFin);
         return (cantidadDias * precioDiario) + totalConsumiciones;
-    }
-
-    public List<Reserva> obtenerDatosRelacionadosListaReserva(List<Reserva> reservas) throws SQLException {
-        for (Reserva reserva : reservas) {
-            reserva = this.obtenerDatosRelacionadosReserva(reserva);
-        }
-
-        return reservas;
-    }
-
-    private Reserva obtenerDatosRelacionadosReserva(Reserva reserva) throws SQLException {
-        reserva.setPrecioHabitacion(precioHabitacionRepository.obtenerPorId(reserva.getPrecioHabitacion().getId()));
-        reserva.setHabitacion(habitacionRepository.obtenerPorId(reserva.getHabitacion().getId()));
-        reserva.setUsuario(usuarioRepository.obtenerPorId(reserva.getUsuario().getId()));
-        reserva.setClientes(clienteRepository.obtenerClientesReserva(reserva.getId()));
-        return reserva;
     }
 
     public void generarCheckInReserva(Integer reservaId) throws SQLException {

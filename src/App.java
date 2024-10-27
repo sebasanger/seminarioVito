@@ -21,8 +21,8 @@ public class App {
     private static UsuarioService usuarioService = new UsuarioService();
 
     public static void main(String[] args) throws SQLException {
-        // mostrarMenuPrincipal();
-        ejecutarLogin();
+        mostrarMenuPrincipal();
+        // ejecutarLogin();
     }
 
     public static void ejecutarLogin() {
@@ -48,9 +48,10 @@ public class App {
     private static void mostrarMenuPrincipal() throws SQLException {
         while (true) {
             limpiarConsola();
-
-            System.out.println("Bienvenido, " + UsuarioService.getUsuarioActual().getNombre() + " "
-                    + UsuarioService.getUsuarioActual().getApellido());
+            if (UsuarioService.getUsuarioActual() != null) {
+                System.out.println("Bienvenido, " + UsuarioService.getUsuarioActual().getNombre() + " "
+                        + UsuarioService.getUsuarioActual().getApellido());
+            }
 
             System.out.println("===========================================");
             System.out.println("           SISTEMA DE GESTIÓN HOTELERA     ");

@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,14 @@ import utils.DateUtils;
 public class ReservaRepository extends AbstractGenericRepository<Reserva, Integer> {
 
     private HabitacionRepository habitacionRepository = new HabitacionRepository();
+    private UsuarioRepository usuarioRepository = new UsuarioRepository();
+    private PrecioHabitacionRepository precioHabitacionRepository = new PrecioHabitacionRepository();
+
+    private static final String sqlGetAll = "SELECT *\n" + //
+            "FROM reservas\n" + //
+            "INNER JOIN  habitaciones ON  habitaciones.id = reservas.habitaciones_id\n" + //
+            "INNER JOIN  precios_habitaciones ON  precios_habitaciones.id = reservas.precios_habitaciones_id\n" + //
+            "INNER JOIN  usuarios ON  usuarios.id = reservas.usuarios_id";
 
     @Override
     protected String getTabla() {
@@ -27,15 +36,52 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
     }
 
     @Override
+    public List<Reserva> obtenerTodos() throws SQLException {
+        List<Reserva> reservas = new ArrayList<>();
+
+        try (Connection conn = MySQLConnection.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlGetAll)) {
+
+            while (rs.next()) {
+                reservas.add(mapeoEntidad(rs));
+            }
+        }
+        return reservas;
+    }
+
+    @Override
+    public Reserva obtenerPorId(Integer id) throws SQLException {
+        String sql = sqlGetAll + " WHERE id = ?";
+        Reserva entidad = null;
+
+        try (Connection conn = MySQLConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setObject(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    entidad = mapeoEntidad(rs);
+                }
+            }
+        }
+        return entidad;
+    }
+
+    @Override
     protected Reserva mapeoEntidad(ResultSet rs) throws SQLException {
+        Habitacion habitacion = habitacionRepository.mapeoEntidad(rs, "habitaciones_id");
+        PrecioHabitacion precioHabitacion = precioHabitacionRepository.mapeoEntidad(rs, "precios_habitaciones_id");
+        Usuario usuario = usuarioRepository.mapeoEntidad(rs, "usuarios_id");
 
         return new Reserva(rs.getInt("id"), rs.getDate("checkIn"), rs.getDate("checkOut"), rs.getDate("fechaCreacion"),
                 rs.getDate("fechaInicio"), rs.getDate("fechaFin"), rs.getString("origen"),
                 rs.getString("destino"), rs.getDouble("precioDiario"), rs.getDouble("precioTotal"),
                 rs.getDouble("pagadoTotal"), rs.getString("estado"),
-                new Habitacion(rs.getInt("habitaciones_id")),
-                new PrecioHabitacion(rs.getInt("precios_habitaciones_id")),
-                new Usuario(rs.getInt("usuarios_id")));
+                habitacion,
+                precioHabitacion,
+                usuario);
     }
 
     @Override
@@ -158,7 +204,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             stmt.setInt(13, reserva.getPrecioHabitacion().getId());
             stmt.setInt(14, reserva.getUsuario().getId());
             stmt.setInt(15, reserva.getId());
-            // TODO: setear tambien checkin
+
             stmt.executeUpdate();
 
             this.eliminarClientesReserva(conn, reserva.getId());// se elimina para actualizar los clientes de la reserva
@@ -181,7 +227,7 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
     }
 
     public List<Reserva> obtenerReservasPorEstado(String status) throws SQLException {
-        String sql = "SELECT * FROM " + getTabla() + " WHERE estado = ?";
+        String sql = sqlGetAll + " WHERE estado = ?";
         List<Reserva> reservas = new ArrayList<>();
 
         try (Connection conn = MySQLConnection.getConnection();
@@ -203,9 +249,9 @@ public class ReservaRepository extends AbstractGenericRepository<Reserva, Intege
             throws SQLException {
         String sql = "";
         if (porFechaFin == true) {
-            sql = "SELECT * FROM " + getTabla() + " WHERE estado = ? AND fechaFin = ?";
+            sql = sqlGetAll + " WHERE estado = ? AND fechaFin = ?";
         } else {
-            sql = "SELECT * FROM " + getTabla() + " WHERE estado = ? AND fechaInicio = ?";
+            sql = sqlGetAll + " WHERE estado = ? AND fechaInicio = ?";
         }
         List<Reserva> reservas = new ArrayList<>();
 

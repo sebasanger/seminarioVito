@@ -20,8 +20,15 @@ public class HabitacionRepository extends AbstractGenericRepository<Habitacion, 
 
     @Override
     protected Habitacion mapeoEntidad(ResultSet rs) throws SQLException {
+        return mapeoEntidad(rs, null);
+    }
 
-        return new Habitacion(rs.getInt("id"), rs.getString("numeroHabitacion"), rs.getBoolean("disponible"),
+    protected Habitacion mapeoEntidad(ResultSet rs, String idName) throws SQLException {
+        String id = "id";
+        if (idName == null) {
+            id = idName;
+        }
+        return new Habitacion(rs.getInt(id), rs.getString("numeroHabitacion"), rs.getBoolean("disponible"),
                 rs.getBoolean("habilitada"),
                 rs.getInt("piso"), rs.getInt("camasSingles"), rs.getInt("camasDobles"), rs.getInt("capacidad"));
     }

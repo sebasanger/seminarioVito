@@ -21,6 +21,15 @@ public class PrecioHabitacionRepository extends AbstractGenericRepository<Precio
                 rs.getBoolean("disponible"), rs.getDate("fechaCreacion"));
     }
 
+    protected PrecioHabitacion mapeoEntidad(ResultSet rs, String idName) throws SQLException {
+        String id = "id";
+        if (idName == null) {
+            id = idName;
+        }
+        return new PrecioHabitacion(rs.getInt(id), rs.getDouble("precio"), rs.getString("descripcion"),
+                rs.getBoolean("disponible"), rs.getDate("fechaCreacion"));
+    }
+
     @Override
     public void crear(PrecioHabitacion precioHabitacion) throws SQLException {
         String sql = "INSERT INTO precios_habitaciones (precio, descripcion, disponible, fechaCreacion) VALUES (?,?,?,?)";

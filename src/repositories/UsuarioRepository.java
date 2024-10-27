@@ -21,6 +21,16 @@ public class UsuarioRepository extends AbstractGenericRepository<Usuario, Intege
                 rs.getString("apellido"), rs.getString("rol"));
     }
 
+    protected Usuario mapeoEntidad(ResultSet rs, String idName) throws SQLException {
+        String id = "id";
+        if (idName == null) {
+            id = idName;
+        }
+
+        return new Usuario(rs.getInt(id), rs.getString("email"), rs.getString("password"), rs.getString("nombre"),
+                rs.getString("apellido"), rs.getString("rol"));
+    }
+
     @Override
     public void crear(Usuario usuario) throws SQLException {
         String sql = "INSERT INTO usuarios (email, password, nombre, apellido, rol) VALUES (?,?,?,?,?)";

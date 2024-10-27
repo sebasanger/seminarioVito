@@ -174,6 +174,7 @@ public class ReservasView {
         System.out.println("2. Reservas pendientes");
         System.out.println("3. Reservas finalizadas");
         System.out.println("4. Reservas eliminadas");
+        System.out.println("5. Volver al menu anterior");
         System.out.println();
         System.out.print("Seleccione una opción: ");
         int opcion = scanner.nextInt();
@@ -191,6 +192,8 @@ public class ReservasView {
             case 4:
                 mostrarReservasPorEstado(EstadoReservaEnum.ELIMINADA);
                 break;
+            case 5:
+                mostrarMenuReservas();
             default:
                 System.out.println("Opción no válida, intenta de nuevo.");
                 verReservasPorEstado();
