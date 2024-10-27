@@ -1,18 +1,13 @@
-## Getting Started
+Proyecto de seminario de practica para SIGLO 21
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+entrega numero 3
 
-## Folder Structure
+Alumno Sangermano Sebastian
 
-The workspace contains two folders by default, where:
+Fecha: 27/10/2024
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+para el funcionamiento
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+- cambiar las propiedades de la conexion de la base de datos con su usuario y password
+- crear la base de datos hoteldb
+- ejecutar el SQL que esta en el proyecto src/estructuraYdatos.sql el cual tiene la estructura y los datos de la base de datos
