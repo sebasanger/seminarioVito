@@ -13,6 +13,7 @@ public class ClienteService extends AbstractGenericService<Cliente, Integer> {
         return clienteRepository;
     }
 
+    // obtiene el cliente por el documento indicado
     public Cliente obtenerPorDocumento(String documento) throws SQLException {
         return this.clienteRepository.obtenerPorDocumento(documento);
     }

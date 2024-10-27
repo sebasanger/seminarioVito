@@ -14,6 +14,7 @@ public class ProductoService extends AbstractGenericService<Producto, Integer> {
         return productoRepository;
     }
 
+    // busca los detalles de los productos en su obtencion
     @Override
     public List<Producto> obtenerTodos() throws SQLException {
         CategoriaService categoriaService = new CategoriaService();

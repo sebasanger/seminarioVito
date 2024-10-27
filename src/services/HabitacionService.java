@@ -15,6 +15,8 @@ public class HabitacionService extends AbstractGenericService<Habitacion, Intege
         return habitacionRepository;
     }
 
+    // busca todas las habitaciones libres entre dos fechas y con una capacidad
+    // minima
     public List<Habitacion> obtenerHabitacionesLibres(Date fechaInicio, Date fechaFin,
             Integer capacidad) throws SQLException {
         return this.habitacionRepository.obtenerHabitacionesLibres(fechaInicio, fechaFin, capacidad);

@@ -22,7 +22,7 @@ public class EntradaProductoService extends AbstractGenericService<EntradaProduc
     @Override
     public List<EntradaProducto> obtenerTodos() throws SQLException {
         List<EntradaProducto> entradasProductos = this.getRepository().obtenerTodos();
-
+        // busca sus detalles
         for (EntradaProducto entradaProducto : entradasProductos) {
             entradaProducto.setProducto(productoRepository.obtenerPorId(entradaProducto.getProducto().getId()));
             entradaProducto.setUsuario(usuarioRepository.obtenerPorId(entradaProducto.getUsuario().getId()));
@@ -33,6 +33,7 @@ public class EntradaProductoService extends AbstractGenericService<EntradaProduc
 
     @Override
     public void crear(EntradaProducto entradaProducto) throws SQLException {
+        // guarda la fecha actual
         Date fechaActual = new Date(new java.util.Date().getTime());
         entradaProducto.setFecha(fechaActual);
 
