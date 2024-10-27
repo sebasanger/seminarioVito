@@ -23,7 +23,10 @@ public class App {
     public static void main(String[] args) throws SQLException {
 
         limpiarConsola();
-        // mostrarMenuPrincipal();
+        // login
+        // email: admin
+        // password: admin
+        System.out.println("Login: email: admin, password: admin");
         ejecutarLogin();
     }
 

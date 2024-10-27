@@ -20,6 +20,8 @@ public class ReservasViewActualizacion {
     private static final Scanner scanner = new Scanner(System.in);
     Reserva reserva = new Reserva();
 
+    // da un menu de posiblidades a actualizar, pide los datos y solicita que se
+    // indique cuando se quiere actualizar los datos cambiados
     public void actualizarReserva(Reserva reserva) throws SQLException {
         boolean continuar = true;
         this.reserva = reserva;
@@ -75,6 +77,7 @@ public class ReservasViewActualizacion {
         reservaController.actualizar(this.reserva);
     }
 
+    // vuelve a pedir cambiar tanto la cantidad de huespedes como sus datos
     private void actualizarHuespedes() throws SQLException {
         List<Cliente> huespedes = new ArrayList<>();
         System.out.print("Ingrese la cantidad de huéspedes: ");
@@ -90,6 +93,7 @@ public class ReservasViewActualizacion {
         System.out.println("Huéspedes actualizados correctamente.");
     }
 
+    // actualiza las fechas
     private void actualizarFechas() {
         LocalDate fechaInicio = DateUtils.pedirFecha("Ingrese la fecha de inicio estimada");
         LocalDate fechaFin = DateUtils.pedirFechaConMinimo("Ingrese la fecha de fin estimada", fechaInicio);
@@ -100,6 +104,7 @@ public class ReservasViewActualizacion {
         System.out.println("Fechas actualizadas correctamente.");
     }
 
+    // puede cambiar la habitacion
     private void actualizarHabitacion() throws SQLException {
         int cantidadHuespedes = this.reserva.getClientes().size();
         LocalDate fechaInicio = DateUtils.convertirADate(this.reserva.getFechaInicio());
@@ -127,6 +132,7 @@ public class ReservasViewActualizacion {
         System.out.println("Origen actualizado correctamente.");
     }
 
+    // se puede actualizar el precio
     private void actualizarPrecio() throws SQLException {
         PrecioHabitacion precioHabitacion = PreciosHabitacionesView.obtenerSeleccionPrecio();
         this.reserva.setPrecioHabitacion(precioHabitacion);

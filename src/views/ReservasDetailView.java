@@ -18,12 +18,18 @@ public class ReservasDetailView {
     private static ConsumoController consumoController = new ConsumoController();
     private static PagoController pagoController = new PagoController();
 
+    // permite generar el check in de una reserva mostrando solo las habitaciones
+    // que estan en estado de pendiente y que estan en la fecha que se indica que
+    // seria de ingreso
     public static void generarCheckInReserva() throws SQLException {
         System.out.println("===========================================");
         System.out.println("           GENERACION DE CHECK IN          ");
         System.out.println("===========================================");
         System.out.println("======================================================");
         System.out.println("           RESERVAS DISPONIBLES PARA CHECK IN         ");
+
+        // muestra solo las reservas que estan pendientes y con fecha de inicio en el
+        // dia de la fecha
         ReservasDetailView.mostrarReservasPorEstadoYFecha(EstadoReservaEnum.PENDIENTE, false);
         System.out.println("======================================================");
 
@@ -40,12 +46,17 @@ public class ReservasDetailView {
 
     }
 
+    // permite generar el check out de una reserva mostrando solo las habitaciones
+    // que estan en estado de activa y que estan en la fecha que se indica que
+    // seria de egreso
     public static void generarCheckOutReserva() throws SQLException {
         System.out.println("===========================================");
         System.out.println("           GENERACION DE CHECK OUT          ");
         System.out.println("===========================================");
         System.out.println("======================================================");
         System.out.println("           RESERVAS DISPONIBLES PARA CHECK OUT        ");
+        // muestra solo las reservas que estan activas y con fecha de fin en el dia de
+        // la fecha
         ReservasDetailView.mostrarReservasPorEstadoYFecha(EstadoReservaEnum.ACTIVA, true);
         System.out.println("======================================================");
 
@@ -65,6 +76,7 @@ public class ReservasDetailView {
 
     }
 
+    // filtra las reservas por un estado y una fecha ya se de inicio o fin
     static void mostrarReservasPorEstadoYFecha(EstadoReservaEnum estado, Boolean porFechaFin) throws SQLException {
         List<Reserva> reservas = reservaController.obtenerReservasPorEstadoYFecha(estado.getEstado(), porFechaFin);
         System.out.println("RESERVAS");
@@ -77,6 +89,8 @@ public class ReservasDetailView {
 
     }
 
+    // premite mostrar la reserva con todos sus detalles como pagos y consumciones
+    // como datos relacionados
     static void mostrarDetalleReservaPorId() throws SQLException {
         ReservasView.verReservas();
         System.out.println("Ingrese el ID de la reserva para ver su detalle: ");
