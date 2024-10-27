@@ -113,7 +113,7 @@ public class PagosView {
         System.out.println("-------------------------------------------");
         System.out.println("PAGOS");
         pagoController.obtenerTodos().forEach(pago -> {
-            System.out.println("CAJA ID " + pago.getId());
+            System.out.println("PAGO ID " + pago.getId());
             System.out.println(pago);
             System.out.println("======================================");
         });

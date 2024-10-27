@@ -132,4 +132,22 @@ public class ConsumicionRepository extends AbstractGenericRepository<Consumicion
         return total;
     }
 
+    public List<Consumicion> obtenerConsumosReserva(Integer reservaId) throws SQLException {
+        String sql = "SELECT * FROM consumiciones WHERE reservas_id = ?";
+        List<Consumicion> consumiciones = new ArrayList<>();
+
+        try (Connection conn = MySQLConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setObject(1, reservaId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    consumiciones.add(mapeoEntidad(rs));
+                }
+            }
+        }
+        return consumiciones;
+    }
+
 }

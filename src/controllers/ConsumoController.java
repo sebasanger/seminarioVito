@@ -1,6 +1,7 @@
 package controllers;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import exceptions.StockInsuficienteException;
 import models.Consumicion;
@@ -17,6 +18,10 @@ public class ConsumoController extends AbstractGenericController<Consumicion, In
 
     public void crearConsumo(Consumicion consumicion) throws SQLException, StockInsuficienteException {
         consumoService.crearConsumo(consumicion);
+    }
+
+    public List<Consumicion> obtenerConsumosReserva(Integer id) throws SQLException {
+        return getService().obtenerConsumosReserva(id);
     }
 
 }

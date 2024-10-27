@@ -14,6 +14,10 @@ import repositories.UsuarioRepository;
 
 public class ConsumoService extends AbstractGenericService<Consumicion, Integer> {
     private ConsumicionRepository consumicionRepository = new ConsumicionRepository();
+    ProductoRepository productoRepository = new ProductoRepository();
+    ReservaRepository reservaRepository = new ReservaRepository();
+    UsuarioRepository usuarioRepository = new UsuarioRepository();
+    MarcaRepository marcaRepository = new MarcaRepository();
 
     @Override
     protected ConsumicionRepository getRepository() {
@@ -22,11 +26,6 @@ public class ConsumoService extends AbstractGenericService<Consumicion, Integer>
 
     @Override
     public List<Consumicion> obtenerTodos() throws SQLException {
-        ProductoRepository productoRepository = new ProductoRepository();
-        ReservaRepository reservaRepository = new ReservaRepository();
-        UsuarioRepository usuarioRepository = new UsuarioRepository();
-        MarcaRepository marcaRepository = new MarcaRepository();
-
         List<Consumicion> consumiciones = this.getRepository().obtenerTodos();
 
         for (Consumicion consumicion : consumiciones) {
@@ -51,9 +50,23 @@ public class ConsumoService extends AbstractGenericService<Consumicion, Integer>
         if (consumicion.getCantidad() > consumicion.getProducto().getStock()) {
             throw new StockInsuficienteException();
         }
-
         consumicionRepository.crear(consumicion);
+    }
 
+    public List<Consumicion> obtenerConsumosReserva(Integer reservaId) throws SQLException {
+        List<Consumicion> consumiciones = this.getRepository().obtenerConsumosReserva(reservaId);
+
+        for (Consumicion consumicion : consumiciones) {
+            consumicion.setProducto(productoRepository.obtenerPorId(consumicion.getProducto().getId()));
+            consumicion.setReserva(reservaRepository.obtenerPorId(consumicion.getReserva().getId()));
+            consumicion.setUsuario(usuarioRepository.obtenerPorId(consumicion.getUsuario().getId()));
+            consumicion.getProducto()
+                    .setMarca(marcaRepository.obtenerPorId(consumicion.getProducto().getMarca().getId()));
+            consumicion.setUsuario(usuarioRepository.obtenerPorId(consumicion.getUsuario().getId()));
+
+        }
+
+        return consumiciones;
     }
 
 }

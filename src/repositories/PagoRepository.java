@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import database.MySQLConnection;
 import models.Caja;
@@ -58,6 +60,24 @@ public class PagoRepository extends AbstractGenericRepository<Pago, Integer> {
             stmt.setInt(7, pago.getId());
             stmt.executeUpdate();
         }
+    }
+
+    public List<Pago> obtenerPagosReserva(Integer reservaId) throws SQLException {
+        String sql = "SELECT * FROM pagos WHERE reservas_id = ?";
+        List<Pago> entidades = new ArrayList<>();
+
+        try (Connection conn = MySQLConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setObject(1, reservaId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    entidades.add(mapeoEntidad(rs));
+                }
+            }
+        }
+        return entidades;
     }
 
 }

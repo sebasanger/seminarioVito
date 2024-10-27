@@ -37,8 +37,8 @@ public class ReservasView {
             System.out.println("5. Ver reservas por estado");
             System.out.println("6. Generar check in");
             System.out.println("7. Generar check out");
-            System.out.println("8. Volver al Menú Principal");
-            System.out.println();
+            System.out.println("8. Ver detalle de reserva");
+            System.out.println("9. Volver al Menú Principal");
             System.out.print("Seleccione una opción: ");
             int opcion = scanner.nextInt();
 
@@ -64,6 +64,9 @@ public class ReservasView {
                     ReservasDetailView.generarCheckOutReserva();
                     break;
                 case 8:
+                    ReservasDetailView.mostrarDetalleReservaPorId();
+                    break;
+                case 9:
                     return;
                 default:
                     System.out.println("Opción no válida, intenta de nuevo.");
@@ -127,7 +130,7 @@ public class ReservasView {
         reservaController.crear(reserva);
     }
 
-    private static void verReservas() throws SQLException {
+    public static void verReservas() throws SQLException {
 
         System.out.println("-------------------------------------------");
         System.out.println("RESERVAS");

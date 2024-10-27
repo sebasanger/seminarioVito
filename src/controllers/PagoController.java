@@ -1,6 +1,7 @@
 package controllers;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import exceptions.CajaNoAbiertaException;
 import exceptions.PagoExcedidoException;
@@ -19,6 +20,10 @@ public class PagoController extends AbstractGenericController<Pago, Integer> {
     public void crearPago(Pago pago) throws SQLException, PagoExcedidoException, CajaNoAbiertaException {
         pagoService.crearPago(pago);
 
+    }
+
+    public List<Pago> obtenerPagosReserva(Integer reservaId) throws SQLException {
+        return getService().obtenerPagosReserva(reservaId);
     }
 
 }

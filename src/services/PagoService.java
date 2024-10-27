@@ -66,4 +66,21 @@ public class PagoService extends AbstractGenericService<Pago, Integer> {
 
     }
 
+    public List<Pago> obtenerPagosReserva(Integer reservaId) throws SQLException {
+        ReservaRepository reservaRepository = new ReservaRepository();
+        UsuarioRepository usuarioRepository = new UsuarioRepository();
+        CajaRepository cajaRepository = new CajaRepository();
+
+        List<Pago> pagos = this.getRepository().obtenerPagosReserva(reservaId);
+
+        for (Pago pago : pagos) {
+            pago.setReserva(reservaRepository.obtenerPorId(pago.getReserva().getId()));
+            pago.setCaja(cajaRepository.obtenerPorId(pago.getCaja().getId()));
+            pago.setUsuario(usuarioRepository.obtenerPorId(pago.getUsuario().getId()));
+
+        }
+
+        return pagos;
+    }
+
 }

@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
+import controllers.ConsumoController;
+import controllers.PagoController;
 import controllers.ReservaController;
 import exceptions.PagoFaltanteException;
 import models.EstadoReservaEnum;
@@ -13,6 +15,8 @@ public class ReservasDetailView {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static ReservaController reservaController = new ReservaController();
+    private static ConsumoController consumoController = new ConsumoController();
+    private static PagoController pagoController = new PagoController();
 
     public static void generarCheckInReserva() throws SQLException {
         System.out.println("===========================================");
@@ -70,6 +74,39 @@ public class ReservasDetailView {
             System.out.println(
                     "============================================================================================");
         });
+
+    }
+
+    static void mostrarDetalleReservaPorId() throws SQLException {
+        ReservasView.verReservas();
+        System.out.println("Ingrese el ID de la reserva para ver su detalle: ");
+        System.out.println("Ingrese [0] para volver al menu anterior: ");
+        int id = scanner.nextInt();
+        Reserva reserva = reservaController.obtenerPorId(id);
+        if (reserva != null) {
+            System.out.println("======================================");
+            System.out.println("RESERVA");
+            System.out.println("Detalle de la reserva: " + reserva.getId());
+            System.out.println(reserva);
+            System.out.println("---------------------------------------");
+            System.out.println("PAGOS");
+            pagoController.obtenerPagosReserva(reserva.getId()).forEach(pago -> {
+                System.out.println(pago);
+            });
+            System.out.println("---------------------------------------");
+            System.out.println("CONSUMICIONES");
+            consumoController.obtenerConsumosReserva(reserva.getId()).forEach(consumo -> {
+                System.out.println(consumo);
+            });
+            System.out.println("---------------------------------------");
+            System.out.println("======================================");
+
+        } else if (id == 0) {
+            ReservasView.mostrarMenuReservas();
+        } else {
+            System.out.println("Reserva no encontrada, intetelo nuevamente");
+            mostrarDetalleReservaPorId();
+        }
 
     }
 
